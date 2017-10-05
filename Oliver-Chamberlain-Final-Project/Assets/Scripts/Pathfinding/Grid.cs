@@ -53,7 +53,22 @@ public class Grid : MonoBehaviour {
             }
         }
     }
+    public Node NodeFromWorldPoint(Vector3 worldPosition)
+    {
+        // we convert the world position into the percentage of how far along the grid it is
+        float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
+        //then we need to clamp them to between 0 and 1
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
 
+        //because arrays are zero indexed, we subtract 1 from the size of the grid
+        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+
+        //then we return the grid coordinate that we need 
+        return grid[x, y];
+    }
     public List<Node> GetNeighbours(Node node)
     {
         List<Node> Neighbours = new List<Node>();
