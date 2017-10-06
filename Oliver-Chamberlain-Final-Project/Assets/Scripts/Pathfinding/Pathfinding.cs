@@ -1,106 +1,129 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
+using System.Diagnostics;
+using System;
 
 public class Pathfinding : MonoBehaviour
 {
+
+    PathRequestManager requestManager;
+
     Grid grid;
-    bool pathSuccess;
 
     private void Awake()
     {
-        grid = FindObjectOfType<Grid>();
+        grid = GetComponent<Grid>();
+        requestManager = GetComponent<PathRequestManager>();
     }
 
     public void StartFindPath(Vector3 startPos, Vector3 targetPos)
     {
         StartCoroutine(FindPath(startPos, targetPos));
     }
-    private IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
-    {
-        Vector3[] wayPoints = new Vector3[0];
 
-        //get the grid position corresponding to these world points
+    IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
+    {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+
+        Vector3[] waypoints = new Vector3[0];
+        bool pathSuccess = false;
+
+        //get the position on the grid of both positions
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
-
-        Heap<Node> openSet = new Heap<Node>(grid.maxSize);
-        HashSet<Node> closedSet = new HashSet<Node>();
-        openSet.Add(startNode);
-
-        while (openSet.Count > 0)
+        if (startNode.walkable && targetNode.walkable)
         {
-            Node currentNode = openSet.RemoveFirst();
-            closedSet.Add(currentNode);
+            //set the open and closed sets then add the start node to the open set
+            Heap<Node> openSet = new Heap<Node>(grid.maxSize);
+            HashSet<Node> closedSet = new HashSet<Node>();
+            openSet.Add(startNode);
 
-            if(currentNode == targetNode)
+            //while open set is not empty
+            while (openSet.Count > 0)
             {
-                Debug.Log("Path found successfully");
-                pathSuccess = true;
-                break;
-            }
+                //set the current node to the first in the set
+                Node currentNode = openSet.RemoveFirst();
+                closedSet.Add(currentNode);
 
-            foreach(Node neighbour in grid.GetNeighbours(currentNode))
-            {
-                if (!neighbour.walkable || closedSet.Contains(neighbour))
-                    continue;
-
-                //get the movement cost to that neighbour node
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
-                
-                if(newMovementCostToNeighbour < neighbour.gCost || !openSet.contains(neighbour))
+                //then we check to see if the current node is the target, if so return out
+                if (currentNode == targetNode)
                 {
-                    neighbour.gCost = newMovementCostToNeighbour;
-                    neighbour.hCost = GetDistance(neighbour, targetNode);
-                    neighbour.parentNode = currentNode;
+                    sw.Stop();
+                    print("Path found: " + sw.ElapsedMilliseconds + " ms");
+                    pathSuccess = true;
+                    break;
                 }
-                if(!openSet.contains(neighbour))
+                foreach (Node neighbour in grid.GetNeighbours(currentNode))
                 {
-                    openSet.Add(neighbour);
-                }
-                else
-                {
-                    openSet.UpdateItem(neighbour);
+                    //search through all neighbours in order to see if they are walkable or in the closed set
+                    if (!neighbour.walkable || closedSet.Contains(neighbour))
+                    {
+                        continue;
+                    }
+                    //get the movement cost to that neighbour node            
+                    int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+                    //then if the movement cost is less than the cost for moving to the neighbour, or the open set doesnt contain the neighbour
+                    if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
+                    {
+                        //set the g and h costs and also set the parent
+                        neighbour.gCost = newMovementCostToNeighbour;
+                        neighbour.hCost = GetDistance(neighbour, targetNode);
+                        neighbour.parentNode = currentNode;
+                    }
+                    //if open doesnt contain the neighbour, we need to add it
+                    if (!openSet.Contains(neighbour))
+                    {
+                        openSet.Add(neighbour);
+                    }
+                    else
+                    {
+                        openSet.UpdateItem(neighbour);
+                    }
                 }
             }
         }
         yield return null;
-        if(pathSuccess)
+        if (pathSuccess)
         {
-            wayPoints = retracePath(startNode, targetNode);
+            waypoints = retracePath(startNode, targetNode);
+
         }
-        PathRequestManager.Instance.FinishedProcessingPath(wayPoints, pathSuccess);
+        requestManager.FinishedProcessingPath(waypoints, pathSuccess);
     }
-    //retrace the bath between node a and node b, starting from the target
+
     Vector3[] retracePath(Node startNode, Node targetNode)
     {
+        //set an empty list
         List<Node> path = new List<Node>();
-
+        //set the current node to being the target
         Node currentNode = targetNode;
 
-        while(currentNode != startNode)
+        //and while the current node isnt the start node
+        while (currentNode != startNode)
         {
+            //continue adding the nodes to the path
             path.Add(currentNode);
+            //and alter current node to be the parent of the previous one
             currentNode = currentNode.parentNode;
-
         }
-            Vector3[] wayPoints = simplifyPath(path);
-            Array.Reverse(wayPoints);
+        Vector3[] waypoints = simplifyPath(path);
+        Array.Reverse(waypoints);
 
-            return wayPoints;
+        return waypoints;
     }
 
-    //if the vector between two nodes is the same as the last (the agent would move in the same direction) ignore it until we find a change in direction
+
     Vector3[] simplifyPath(List<Node> path)
     {
         List<Vector3> waypoints = new List<Vector3>();
         Vector2 directionOld = Vector2.zero;
 
-        for(int i = 0; i < path.Count; i++)
+        for (int i = 1; i < path.Count; i++)
         {
-            Vector2 directionNew = new Vector2(path[i - 1].GridPosition.x - path[i].GridPosition.x, path[i - 1].GridPosition.y - path[i].GridPosition.y);
-            if(directionNew != directionOld)
+            Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
+            if (directionNew != directionOld)
             {
                 waypoints.Add(path[i].WorldPosition);
             }
@@ -109,13 +132,27 @@ public class Pathfinding : MonoBehaviour
         return waypoints.ToArray();
     }
 
-    //using 1 as the movement left, right, up or down, and sqrt(2) for diagonal movement, both multiplied by 10
+    //get the heuristic between two nodes
     int GetDistance(Node nodeA, Node nodeB)
     {
-        int dstX = (int)Mathf.Abs(nodeA.GridPosition.x - nodeB.GridPosition.x);
-        int dstY = (int)Mathf.Abs(nodeA.GridPosition.y - nodeB.GridPosition.y);
+        //get the absolute value of the x and y 
+        int distanceX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
+        int distanceY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
-        return 10 * (dstX + dstY) + (14 - 2 * 10) * Mathf.Min(dstX, dstY);
+        //then if x is bigger than y
+        if (distanceX > distanceY)
+            return 14 * distanceY + 10 * (distanceX - distanceY);
+
+        //otherwise
+        return 14 * distanceX + 10 * (distanceY - distanceX);
     }
-
 }
+
+    ////using 1 as the movement left, right, up or down, and sqrt(2) for diagonal movement, both multiplied by 10
+    //int GetDistance(Node nodeA, Node nodeB)
+    //{
+    //    int dstX = (int)Mathf.Abs(nodeA.GridPosition.x - nodeB.GridPosition.x);
+    //    int dstY = (int)Mathf.Abs(nodeA.GridPosition.y - nodeB.GridPosition.y);
+
+    //    return 10 * (dstX + dstY) + (14 - 2 * 10) * Mathf.Min(dstX, dstY);
+    //}

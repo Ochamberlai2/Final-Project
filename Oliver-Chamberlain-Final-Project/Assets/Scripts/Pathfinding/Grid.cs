@@ -53,11 +53,11 @@ public class Grid : MonoBehaviour {
             }
         }
     }
-    public Node NodeFromWorldPoint(Vector3 worldPosition)
+    public Node NodeFromWorldPoint(Vector3 WorldPoint)
     {
         // we convert the world position into the percentage of how far along the grid it is
-        float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-        float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
+        float percentX = (WorldPoint.x + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (WorldPoint.z + gridWorldSize.y / 2) / gridWorldSize.y;
         //then we need to clamp them to between 0 and 1
         percentX = Mathf.Clamp01(percentX);
         percentY = Mathf.Clamp01(percentY);
@@ -83,8 +83,8 @@ public class Grid : MonoBehaviour {
                         continue;
                     
                     //then check the x and y to give their position in the grid
-                    int checkX = (int)node.GridPosition.x + x;
-                    int checkY = (int)node.GridPosition.y + y;
+                    int checkX = node.gridX + x;
+                    int checkY = node.gridY + y;
 
                 if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
                     {
@@ -116,6 +116,14 @@ public class Grid : MonoBehaviour {
                 Gizmos.DrawLine(new Vector3(grid[0, y].WorldPosition.x - nodeRadius, grid[0, y].WorldPosition.y + 0.1f, grid[0, y].WorldPosition.z - nodeRadius), new Vector3(grid[gridSizeX - 1, y].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, y].WorldPosition.y + 0.1f, grid[gridSizeX - 1, y].WorldPosition.z - nodeRadius));
             }
             Gizmos.DrawLine(new Vector3(grid[0, gridSizeY -1].WorldPosition.x - nodeRadius, grid[0, gridSizeY - 1].WorldPosition.y + 0.1f, grid[0, gridSizeY - 1].WorldPosition.z + nodeRadius), new Vector3(grid[gridSizeX - 1, gridSizeY -1].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.y + 0.1f, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.z + nodeRadius));
+        }
+        if(grid != null)
+        foreach(Node node in grid)
+        {
+            if(!node.walkable)
+            {
+                Gizmos.DrawSphere(node.WorldPosition, 0.5f);
+            }
         }
     }
 

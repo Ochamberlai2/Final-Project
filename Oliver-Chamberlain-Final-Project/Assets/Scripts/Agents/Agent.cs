@@ -28,24 +28,48 @@ public class Agent : MonoBehaviour {
         {
             path = newpath;
             StopCoroutine("FollowPath");
-            StartCoroutine(FollowPath(path));
+            StartCoroutine("FollowPath");
         }
     }
 
-    private IEnumerator FollowPath(Vector3[] path)
+    private IEnumerator FollowPath()
     {
+        targetIndex = 0;
         Vector3 currentWaypoint = path[0];
-
-        if(transform.position == currentWaypoint)
+        while (true)
         {
-            targetIndex++;
-            if(targetIndex >= path.Length)
+            if (transform.position == currentWaypoint)
             {
-                yield break;
+                targetIndex++;
+                if (targetIndex >= path.Length)
+                {
+                    yield break;
+                }
+                currentWaypoint = path[targetIndex];
             }
-            currentWaypoint = path[targetIndex];
+            transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+            yield return null;
         }
-        transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed);
-        yield return null;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (path != null)
+        {
+            for (int i = targetIndex; i < path.Length; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(path[i], Vector3.one / 5);
+
+                if (i == targetIndex)
+                {
+                    Gizmos.DrawLine(transform.position, path[i]);
+                }
+                else
+                {
+                    Gizmos.DrawLine(path[i - 1], path[i]);
+                }
+            }
+        }
     }
 }

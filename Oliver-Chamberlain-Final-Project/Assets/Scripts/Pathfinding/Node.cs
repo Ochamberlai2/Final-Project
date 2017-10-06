@@ -3,22 +3,23 @@ using UnityEngine;
 public class Node : IHeapItem<Node>
 {
     public Vector3 WorldPosition;
-    public Vector2 GridPosition;
+    public int gridX, gridY;
     public bool walkable;
     public int gCost;
     public int hCost;
 
     public Node parentNode;
+    private int heapIndex;
 
     public int HeapIndex
     {
         get
         {
-            return HeapIndex;
+            return heapIndex;
         }
         set
         {
-            HeapIndex = value;
+            heapIndex = value;
         }
     }
     public int FCost
@@ -28,6 +29,14 @@ public class Node : IHeapItem<Node>
             return gCost + hCost;
         }
     }
+    public Node( Vector3 _worldPosition,Vector2 _GridPosition, bool _walkable)
+    {
+        WorldPosition = _worldPosition;
+        gridX = (int)_GridPosition.x;
+        gridY = (int)_GridPosition.y;
+        walkable = _walkable;
+    }
+
     public int CompareTo(Node nodeToCompare)
     {
         int compare = FCost.CompareTo(nodeToCompare.FCost);
@@ -37,12 +46,5 @@ public class Node : IHeapItem<Node>
         }
         return -compare; 
     }
-    public Node( Vector3 _worldPosition,Vector2 _GridPosition, bool _walkable)
-    {
-        WorldPosition = _worldPosition;
-        GridPosition = _GridPosition;
-        walkable = _walkable;
-    }
-
 	
 }
