@@ -104,26 +104,22 @@ public class Grid : MonoBehaviour {
         if (grid != null)
         {
             Gizmos.color = GizmoColor;
-            //draw vertical lines
-            for (int x = 0; x < gridSizeX; x++)
+            foreach(Node node in grid)
             {
-                Gizmos.DrawLine(new Vector3(grid[x, 0].WorldPosition.x - nodeRadius, grid[x, 0].WorldPosition.y + 0.1f, grid[x, 0].WorldPosition.z -nodeRadius), new Vector3(grid[x, gridSizeY - 1].WorldPosition.x - nodeRadius, grid[x, gridSizeY - 1].WorldPosition.y + 0.1f, grid[x, gridSizeY - 1].WorldPosition.z + nodeRadius));
+                Gizmos.DrawWireCube(node.WorldPosition, new Vector3(1,0,1)* nodeDiameter);
             }
-            Gizmos.DrawLine(new Vector3(grid[gridSizeX-1, 0].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, 0].WorldPosition.y + 0.1f, grid[gridSizeX-1, 0].WorldPosition.z - nodeRadius), new Vector3(grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.y + 0.1f, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.z + nodeRadius));
-            //draw horizontal lines
-            for (int y = 0; y < gridSizeY; y++)
-            {
-                Gizmos.DrawLine(new Vector3(grid[0, y].WorldPosition.x - nodeRadius, grid[0, y].WorldPosition.y + 0.1f, grid[0, y].WorldPosition.z - nodeRadius), new Vector3(grid[gridSizeX - 1, y].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, y].WorldPosition.y + 0.1f, grid[gridSizeX - 1, y].WorldPosition.z - nodeRadius));
-            }
-            Gizmos.DrawLine(new Vector3(grid[0, gridSizeY -1].WorldPosition.x - nodeRadius, grid[0, gridSizeY - 1].WorldPosition.y + 0.1f, grid[0, gridSizeY - 1].WorldPosition.z + nodeRadius), new Vector3(grid[gridSizeX - 1, gridSizeY -1].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.y + 0.1f, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.z + nodeRadius));
-        }
-        if(grid != null)
-        foreach(Node node in grid)
-        {
-            if(!node.walkable)
-            {
-                Gizmos.DrawSphere(node.WorldPosition, 0.5f);
-            }
+            ////draw vertical lines
+            //for (int x = 0; x < gridSizeX; x++)
+            //{
+            //    Gizmos.DrawLine(new Vector3(grid[x, 0].WorldPosition.x - nodeRadius, grid[x, 0].WorldPosition.y + 0.1f, grid[x, 0].WorldPosition.z -nodeRadius), new Vector3(grid[x, gridSizeY - 1].WorldPosition.x - nodeRadius, grid[x, gridSizeY - 1].WorldPosition.y + 0.1f, grid[x, gridSizeY - 1].WorldPosition.z + nodeRadius));
+            //}
+            //Gizmos.DrawLine(new Vector3(grid[gridSizeX-1, 0].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, 0].WorldPosition.y + 0.1f, grid[gridSizeX-1, 0].WorldPosition.z - nodeRadius), new Vector3(grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.y + 0.1f, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.z + nodeRadius));
+            ////draw horizontal lines
+            //for (int y = 0; y < gridSizeY; y++)
+            //{
+            //    Gizmos.DrawLine(new Vector3(grid[0, y].WorldPosition.x - nodeRadius, grid[0, y].WorldPosition.y + 0.1f, grid[0, y].WorldPosition.z - nodeRadius), new Vector3(grid[gridSizeX - 1, y].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, y].WorldPosition.y + 0.1f, grid[gridSizeX - 1, y].WorldPosition.z - nodeRadius));
+            //}
+            //Gizmos.DrawLine(new Vector3(grid[0, gridSizeY -1].WorldPosition.x - nodeRadius, grid[0, gridSizeY - 1].WorldPosition.y + 0.1f, grid[0, gridSizeY - 1].WorldPosition.z + nodeRadius), new Vector3(grid[gridSizeX - 1, gridSizeY -1].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.y + 0.1f, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.z + nodeRadius));
         }
     }
 

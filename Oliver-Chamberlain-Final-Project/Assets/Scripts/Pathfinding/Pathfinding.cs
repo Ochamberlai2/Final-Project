@@ -6,7 +6,7 @@ using System;
 
 public class Pathfinding : MonoBehaviour
 {
-
+    HashSet<Node> closedSet;
     PathRequestManager requestManager;
 
     Grid grid;
@@ -37,7 +37,7 @@ public class Pathfinding : MonoBehaviour
         {
             //set the open and closed sets then add the start node to the open set
             Heap<Node> openSet = new Heap<Node>(grid.maxSize);
-            HashSet<Node> closedSet = new HashSet<Node>();
+            closedSet = new HashSet<Node>();
             openSet.Add(startNode);
 
             //while open set is not empty
@@ -99,7 +99,6 @@ public class Pathfinding : MonoBehaviour
         List<Node> path = new List<Node>();
         //set the current node to being the target
         Node currentNode = targetNode;
-
         //and while the current node isnt the start node
         while (currentNode != startNode)
         {
@@ -119,40 +118,39 @@ public class Pathfinding : MonoBehaviour
     {
         List<Vector3> waypoints = new List<Vector3>();
         Vector2 directionOld = Vector2.zero;
-
         for (int i = 1; i < path.Count; i++)
         {
-            Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
+            Vector2 directionNew = new Vector2(path[i].gridX - path[i-1].gridX, path[i].gridY - path[i-1].gridY);
             if (directionNew != directionOld)
             {
-                waypoints.Add(path[i].WorldPosition);
+                waypoints.Add(path[i-1].WorldPosition);
             }
             directionOld = directionNew;
         }
         return waypoints.ToArray();
     }
 
-    //get the heuristic between two nodes
+    ////get the heuristic between two nodes
+    //int GetDistance(Node nodeA, Node nodeB)
+    //{
+    //    //get the absolute value of the x and y 
+    //    int distanceX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
+    //    int distanceY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
+
+    //    //then if x is bigger than y
+    //    if (distanceX > distanceY)
+    //        return 14 * distanceY + 10 * (distanceX - distanceY);
+
+    //    //otherwise
+    //    return 14 * distanceX + 10 * (distanceY - distanceX);
+    //}
+    //using 1 as the movement left, right, up or down, and sqrt(2) for diagonal movement, both multiplied by 10
     int GetDistance(Node nodeA, Node nodeB)
     {
-        //get the absolute value of the x and y 
-        int distanceX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
-        int distanceY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
+        int dstX = (int)Mathf.Abs(nodeA.gridX - nodeB.gridX);
+        int dstY = (int)Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
-        //then if x is bigger than y
-        if (distanceX > distanceY)
-            return 14 * distanceY + 10 * (distanceX - distanceY);
-
-        //otherwise
-        return 14 * distanceX + 10 * (distanceY - distanceX);
+        return 10 * (dstX + dstY) + (14 - 2 * 10) * Mathf.Min(dstX, dstY);
     }
 }
 
-    ////using 1 as the movement left, right, up or down, and sqrt(2) for diagonal movement, both multiplied by 10
-    //int GetDistance(Node nodeA, Node nodeB)
-    //{
-    //    int dstX = (int)Mathf.Abs(nodeA.GridPosition.x - nodeB.GridPosition.x);
-    //    int dstY = (int)Mathf.Abs(nodeA.GridPosition.y - nodeB.GridPosition.y);
-
-    //    return 10 * (dstX + dstY) + (14 - 2 * 10) * Mathf.Min(dstX, dstY);
-    //}
