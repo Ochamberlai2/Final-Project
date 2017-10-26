@@ -7,5 +7,6 @@ public class RowData
     {
         public bool[] row;
     }
-    public Row[] rows = new Row[9];
+    public Row[] rows;
+    public int NumAgents;
 }

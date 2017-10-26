@@ -10,15 +10,19 @@ public class RowDataDrawer:  PropertyDrawer
         Rect newPos = position;
         newPos.y += 18f;
         SerializedProperty data = property.FindPropertyRelative("rows");
-
-        for(int i = 0; i < 7; i++)
+        SerializedProperty numAgents = property.FindPropertyRelative("NumAgents");
+        if(data.arraySize != numAgents.intValue)
+        {
+            data.arraySize = numAgents.intValue;
+        }
+        for(int i = 0; i < data.arraySize; i++)
         {
             SerializedProperty row = data.GetArrayElementAtIndex(i).FindPropertyRelative("row");
             newPos.height = 18f;
-            if (row.arraySize != 9)
-                row.arraySize = 9;
-            newPos.width = position.width / 9;
-            for(int j = 0; j < 9; j++)
+            if (row.arraySize != data.arraySize)
+                row.arraySize = data.arraySize;
+            newPos.width = position.width / data.arraySize;
+            for(int j = 0; j < row.arraySize; j++)
             {
                 EditorGUI.PropertyField(newPos, row.GetArrayElementAtIndex(j), GUIContent.none);
                 newPos.x += newPos.width;
@@ -29,6 +33,7 @@ public class RowDataDrawer:  PropertyDrawer
     }
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        return 18f * 8;
+        SerializedProperty numAgents = property.FindPropertyRelative("NumAgents");
+        return 18f * (numAgents.intValue + 1);
     }
 }

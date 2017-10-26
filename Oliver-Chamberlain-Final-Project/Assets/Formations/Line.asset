@@ -14,12 +14,8 @@ MonoBehaviour:
   NumOfAgents: 2
   FormationLayout:
     rows:
-    - row: 000000000000000000
-    - row: 000000000000000000
-    - row: 000000000000000000
-    - row: 000000000000000000
-    - row: 000000000000000000
-    - row: 000000000000000000
-    - row: 000000000000000000
-  DistBetweenColumns: 0
-  DistBetweenRows: 0
+    - row: 0101
+    - row: 0000
+    NumAgents: 2
+  DistBetweenColumns: 1
+  DistBetweenRows: 1

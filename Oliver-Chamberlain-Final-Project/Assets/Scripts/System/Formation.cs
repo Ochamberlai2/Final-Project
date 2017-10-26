@@ -9,5 +9,14 @@ public class Formation : ScriptableObject
     public RowData FormationLayout;
     public float DistBetweenColumns;
     public float DistBetweenRows;
-	
+
+    void OnValidate()
+    {
+        if(NumOfAgents != FormationLayout.NumAgents)
+        {
+            FormationLayout.NumAgents = NumOfAgents;
+            FormationLayout.rows = null;
+        }
+    }
+
 }
