@@ -130,25 +130,11 @@ public class Pathfinding : MonoBehaviour
         return waypoints.ToArray();
     }
 
-    ////get the heuristic between two nodes
-    //int GetDistance(Node nodeA, Node nodeB)
-    //{
-    //    //get the absolute value of the x and y 
-    //    int distanceX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
-    //    int distanceY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
-
-    //    //then if x is bigger than y
-    //    if (distanceX > distanceY)
-    //        return 14 * distanceY + 10 * (distanceX - distanceY);
-
-    //    //otherwise
-    //    return 14 * distanceX + 10 * (distanceY - distanceX);
-    //}
-    //using 1 as the movement left, right, up or down, and sqrt(2) for diagonal movement, both multiplied by 10
+    
     int GetDistance(Node nodeA, Node nodeB)
     {
-        int dstX = (int)Mathf.Abs(nodeA.gridX - nodeB.gridX);
-        int dstY = (int)Mathf.Abs(nodeA.gridY - nodeB.gridY);
+        int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
+        int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
         return 10 * (dstX + dstY) + (14 - 2 * 10) * Mathf.Min(dstX, dstY);
     }

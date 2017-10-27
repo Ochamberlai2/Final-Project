@@ -15,9 +15,9 @@ public class RowDataDrawer:  PropertyDrawer
         {
             data.arraySize = numAgents.intValue;
         }
-        for(int i = 0; i < data.arraySize; i++)
+        for(int i = data.arraySize-1; i >= 0  ; i--)
         {
-            SerializedProperty row = data.GetArrayElementAtIndex(i).FindPropertyRelative("row");
+            SerializedProperty row = data.GetArrayElementAtIndex(i).FindPropertyRelative("Column");
             newPos.height = 18f;
             if (row.arraySize != data.arraySize)
                 row.arraySize = data.arraySize;

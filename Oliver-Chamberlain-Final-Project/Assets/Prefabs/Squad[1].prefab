@@ -52,7 +52,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SquadLeader: {fileID: 0}
-  SquadMembers: []
+  SquadMembers:
+  - {fileID: 0}
+  - {fileID: 0}
   Centre: []
   LeftFlank: []
   RightFlank: []
+  currentFormation: {fileID: 11400000, guid: 916a1e8d2497f6a47993084f4178278a, type: 2}

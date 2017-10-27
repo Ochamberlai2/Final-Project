@@ -14,9 +14,13 @@ public class Agent : MonoBehaviour {
     //if a unit has a flank index of 0 then they are the flank's leader and they must keep an offset from the leader of the squad
     public Vector3 offsetFromLeader;
 
+    public int formationXPos;
+    public int formationYPos;
 #region pathfinding
     public KeyCode findpath;
-    private Vector3[] path;
+    [HideInInspector]
+    public Vector3[] path;
+  
     int targetIndex;
     public float speed = 5f;
 
@@ -25,8 +29,12 @@ public class Agent : MonoBehaviour {
         if (pathSuccess)
         {
             path = newpath;
-            StopCoroutine("FollowPath");
-            StartCoroutine("FollowPath");
+            agentSquad.CalculateSquadPath();
+            foreach(Agent agent in agentSquad.SquadMembers)
+            {
+                agent.StopCoroutine("FollowPath");
+                agent.StartCoroutine("FollowPath");
+            }
         }
     }
 
@@ -55,46 +63,34 @@ public class Agent : MonoBehaviour {
     {
         agentSquad = FindObjectOfType<Squad>();
     }
-    public void SetLeader()
-    {
-        switch (flank)
-        {
-            case Flank.left:
-                if (flankIndex == 0)
-                    Leader = this;
-                else
-                    Leader = agentSquad.LeftFlank[flankIndex - 1];
-                break;
-            case Flank.centre:
-                if (flankIndex == 0)
-                    Leader = this;
-                else
-                    Leader = agentSquad.Centre[flankIndex - 1];
-                break;
-            case Flank.right:
-                if (flankIndex == 0)
-                    Leader = this;
-                else
-                    Leader = agentSquad.RightFlank[flankIndex - 1];
-                break;
-            default:
-                break;
-        }
-    }
+   
 
     void Update ()
     {
-		if(Input.GetKeyDown(findpath))
+        if(agentSquad.SquadLeader == this)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit rayhit = new RaycastHit();
-            if (Physics.Raycast(ray, out rayhit))
+            if (Input.GetKeyDown(findpath))
             {
-                PathRequestManager.RequestPath(transform.position, rayhit.point, OnPathFound);
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit rayhit = new RaycastHit();
+                if (Physics.Raycast(ray, out rayhit))
+                {
+                    PathRequestManager.RequestPath(transform.position, rayhit.point, OnPathFound);
+                }
             }
         }
 	}
-    
+
+    public Vector3 GetOffsetPosition()
+    {
+        int offsetX = formationXPos - Leader.formationXPos;
+        int offsetY = formationYPos - Leader.formationYPos;
+
+        float positionX = offsetX * agentSquad.currentFormation.DistBetweenColumns;
+        float positionZ = offsetY * agentSquad.currentFormation.DistBetweenRows;
+       return new Vector3(positionX, Leader.transform.position.y, positionZ);
+    }
+
 
     private void OnDrawGizmos()
     {
