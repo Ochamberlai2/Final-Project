@@ -5,11 +5,19 @@ public class Node : IHeapItem<Node>
     public Vector3 WorldPosition;
     public int gridX, gridY;
     public bool walkable;
-    public int gCost;
-    public int hCost;
+
+    public bool searched;
+
+    public int gCost; //total path distance covered, used for both the A* pathfinding algorithm and the Dijksra algorithm used for the vector flow field
+
+
+    public int hCost;//the heuristic value used in A* 
 
     public Node parentNode;
-    private int heapIndex;
+    private int heapIndex; //heap index used in the A* algorithm
+
+    public Vector2 NodeVector;// vector the node contains which points towards the quickest path to the goal
+
 
     public int HeapIndex
     {
@@ -28,7 +36,7 @@ public class Node : IHeapItem<Node>
         {
             return gCost + hCost;
         }
-    }
+    }//heuristic value + total path distance covered
     public Node( Vector3 _worldPosition,Vector2 _GridPosition, bool _walkable)
     {
         WorldPosition = _worldPosition;

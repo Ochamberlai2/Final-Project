@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/TestScene1.unity
+- path: Assets/VectorFlowField pathfinding.unity
   isLoaded: 1
   isActive: 1

@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class Grid : MonoBehaviour {
 
     public LayerMask UnwalkableLayer;
-
+    #region DebugGizmos
+    [SerializeField]
+    private bool DrawGcost;
+    [SerializeField]
+    private bool DrawFlowField;
+#endregion
     [Header("Grid Attributes")]
     public Vector2 gridWorldSize;
     [Range(0, 2)]
@@ -15,7 +21,9 @@ public class Grid : MonoBehaviour {
 
     [Space]
     [SerializeField]
-    private Color GizmoColor;
+    private Color WalkableGridColor;
+    [SerializeField]
+    private Color UnwalkableGridColor;
 
     private float nodeDiameter;
     [HideInInspector]
@@ -95,6 +103,25 @@ public class Grid : MonoBehaviour {
             }     
         return Neighbours;
     }
+    public Node[] GetOrthogonalNeighbours(Node node)
+    {
+       Node[] neighbours = new Node[4];
+        //add top
+        if (node.gridY < gridSizeY-1 && grid[node.gridX, node.gridY + 1].walkable)
+            neighbours[0] = grid[node.gridX, node.gridY + 1];
+        //add bottom
+        if (node.gridY > 0 && grid[node.gridX, node.gridY - 1].walkable) 
+            neighbours[1] = grid[node.gridX, node.gridY - 1];
+        //add left
+        if (node.gridX > 0 && grid[node.gridX - 1, node.gridY].walkable)
+            neighbours[2] = grid[node.gridX - 1, node.gridY];
+        //add right
+        if (node.gridX < gridSizeX-1 && grid[node.gridX + 1, node.gridY].walkable)
+            neighbours[3] = grid[node.gridX + 1, node.gridY];
+
+       
+        return neighbours;
+    }
 
     private void OnDrawGizmos()
     {
@@ -103,23 +130,20 @@ public class Grid : MonoBehaviour {
 
         if (grid != null)
         {
-            Gizmos.color = GizmoColor;
             foreach(Node node in grid)
             {
-                Gizmos.DrawWireCube(node.WorldPosition, new Vector3(1,0,1)* nodeDiameter);
+                Gizmos.color = (node.walkable) ? WalkableGridColor : UnwalkableGridColor;
+                Gizmos.DrawWireCube(node.WorldPosition, new Vector3(0.95f,0,0.95f)* nodeDiameter);
+                if (DrawGcost)
+                    //Handles.Label(node.WorldPosition, node.gCost.ToString());
+                    Handles.Label(node.WorldPosition, node.NodeVector.ToString());
+
+                if (DrawFlowField)
+                    Gizmos.DrawLine(node.WorldPosition, node.WorldPosition + new Vector3(node.NodeVector.x, node.NodeVector.y, 0));
+                if (node.NodeVector == Vector2.zero && node.searched)
+                    Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - .1f));
             }
-            ////draw vertical lines
-            //for (int x = 0; x < gridSizeX; x++)
-            //{
-            //    Gizmos.DrawLine(new Vector3(grid[x, 0].WorldPosition.x - nodeRadius, grid[x, 0].WorldPosition.y + 0.1f, grid[x, 0].WorldPosition.z -nodeRadius), new Vector3(grid[x, gridSizeY - 1].WorldPosition.x - nodeRadius, grid[x, gridSizeY - 1].WorldPosition.y + 0.1f, grid[x, gridSizeY - 1].WorldPosition.z + nodeRadius));
-            //}
-            //Gizmos.DrawLine(new Vector3(grid[gridSizeX-1, 0].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, 0].WorldPosition.y + 0.1f, grid[gridSizeX-1, 0].WorldPosition.z - nodeRadius), new Vector3(grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.y + 0.1f, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.z + nodeRadius));
-            ////draw horizontal lines
-            //for (int y = 0; y < gridSizeY; y++)
-            //{
-            //    Gizmos.DrawLine(new Vector3(grid[0, y].WorldPosition.x - nodeRadius, grid[0, y].WorldPosition.y + 0.1f, grid[0, y].WorldPosition.z - nodeRadius), new Vector3(grid[gridSizeX - 1, y].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, y].WorldPosition.y + 0.1f, grid[gridSizeX - 1, y].WorldPosition.z - nodeRadius));
-            //}
-            //Gizmos.DrawLine(new Vector3(grid[0, gridSizeY -1].WorldPosition.x - nodeRadius, grid[0, gridSizeY - 1].WorldPosition.y + 0.1f, grid[0, gridSizeY - 1].WorldPosition.z + nodeRadius), new Vector3(grid[gridSizeX - 1, gridSizeY -1].WorldPosition.x + nodeRadius, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.y + 0.1f, grid[gridSizeX - 1, gridSizeY - 1].WorldPosition.z + nodeRadius));
+           
         }
     }
 
