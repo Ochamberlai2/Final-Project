@@ -6,7 +6,13 @@ public class Node : IHeapItem<Node>
     public int gridX, gridY;
     public bool walkable;
 
+    //for debugging only
     public bool searched;
+    public bool startNode;
+    //for debugging only
+
+
+
 
     public int gCost; //total path distance covered, used for both the A* pathfinding algorithm and the Dijksra algorithm used for the vector flow field
 

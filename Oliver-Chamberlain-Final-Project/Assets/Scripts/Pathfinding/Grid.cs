@@ -130,17 +130,31 @@ public class Grid : MonoBehaviour {
 
         if (grid != null)
         {
+        
             foreach(Node node in grid)
             {
+                if (DrawGcost)
+                {
+                    Gizmos.color = (node.walkable)? Color.Lerp(Color.cyan,Color.black, (float)node.gCost/100) : Color.black;
+                    Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0.1f,1) * (nodeDiameter - .1f));
+                    Handles.Label(node.WorldPosition + new Vector3(-nodeRadius, 5, nodeRadius),node.gCost.ToString());
+                }
+                if(node.startNode)
+                {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawSphere(node.WorldPosition, nodeRadius);
+                }
+
                 Gizmos.color = (node.walkable) ? WalkableGridColor : UnwalkableGridColor;
                 Gizmos.DrawWireCube(node.WorldPosition, new Vector3(0.95f,0,0.95f)* nodeDiameter);
-                if (DrawGcost)
-                    //Handles.Label(node.WorldPosition, node.gCost.ToString());
-                    Handles.Label(node.WorldPosition, node.NodeVector.ToString());
+
 
                 if (DrawFlowField)
-                    Gizmos.DrawLine(node.WorldPosition, node.WorldPosition + new Vector3(node.NodeVector.x, node.NodeVector.y, 0));
-                if (node.NodeVector == Vector2.zero && node.searched)
+                {
+                    Ray ray = new Ray(node.WorldPosition, node.NodeVector);
+                    Gizmos.DrawRay(ray);    
+                }
+                if (node.NodeVector == Vector2.zero && node.searched && !node.startNode)
                     Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - .1f));
             }
            

@@ -5,22 +5,58 @@ using UnityEngine;
 public class FlowFieldGenerator : MonoBehaviour {
 
     Grid grid;
-    public Vector2[,] flowField;
+    public LineRenderer[,] flowField;
 
     public void Start()
     {
         grid = FindObjectOfType<Grid>();
-        flowField = new Vector2[grid.gridSizeX,grid.gridSizeY];
+        flowField = new LineRenderer[grid.gridSizeX,grid.gridSizeY];
+        GameObject lineRendererParent = GameObject.Find("Vector renderers");
+        for(int x = 0; x < grid.gridSizeX; x++)
+        {
+            for(int y = 0; y < grid.gridSizeY; y++)
+            {
+                flowField[x, y] = new GameObject().AddComponent<LineRenderer>();
+                flowField[x, y].gameObject.name = "(" + x + "," + y + ")";
+                flowField[x, y].transform.SetParent(lineRendererParent.transform);
+                flowField[x, y].material = Resources.Load<Material>("FlowFieldArrow");
+                flowField[x, y].startWidth = .2f;
+                flowField[x, y].endWidth = .2f;
+            }
+        }
     }
     public void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+    
+                if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            DijkstraFloodFill(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            GenerateFlowField();
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit rayhit = new RaycastHit();
+            if (Physics.Raycast(ray, out rayhit))
+            {
+                BrushfireAlgorithm(rayhit.point);
+                GenerateFlowField();
+            }
         }
     }
-    
+    public void FixedUpdate()
+    {
+        for (int x = 0; x < grid.gridSizeX; x++)
+        {
+            for (int y = 0; y < grid.gridSizeY; y++)
+            {
+                flowField[x, y].useWorldSpace = true;
+                flowField[x, y].positionCount = 2;
+                Vector3[] positions = new Vector3[2];
+
+                positions[0] = grid.grid[x, y].WorldPosition + new Vector3(0,.1f,0);
+                positions[1] =grid.grid[x, y].WorldPosition + new Vector3(grid.grid[x, y].NodeVector.x,.1f , (grid.grid[x, y].NodeVector.y));
+
+                flowField[x, y].SetPositions(positions);
+            }
+        }
+
+    }
     public void GenerateFlowField()
     {
         for(int x = 0; x < grid.gridSizeX; x++)
@@ -30,43 +66,32 @@ public class FlowFieldGenerator : MonoBehaviour {
                 //unwalkable nodes dont have a flow value so ignore it
                 if (!grid.grid[x, y].walkable)
                     continue;
-                //int minDist = int.MaxValue;
-                //Node minNode = null;
-                //foreach (Node neighbour in grid.GetNeighbours(grid.grid[x,y]))
-                //{
-                //    int dist = neighbour.gCost - grid.grid[x, y].gCost;
-                //    if(dist < minDist)
-                //    {
-                //        minDist = dist;
-                //        minNode = neighbour;
-                //    }
 
-                //}
-                //if(minNode != null)
-                //{
-                //    grid.grid[x, y].NodeVector = (minNode.WorldPosition - grid.grid[x, y].WorldPosition).normalized; 
-                //}
 
+                //get the orthogonal neighbours
                 Node[] orthoNeighbours = grid.GetOrthogonalNeighbours(grid.grid[x, y]);
                 int[] gCosts = new int[4];
 
+                //loop through four times (for each of the orthogonal neighbours
                 for (int i = 0; i < 4; i++)
                 {
-                    if(orthoNeighbours[i] != null)
+                    //if the neighbour is null, that means that they are either on the edge of the grid or their neighbour is unwalkable
+                    if (orthoNeighbours[i] != null)
                     {
                         gCosts[i] = orthoNeighbours[i].gCost;
                     }
+                    //if it is null, then we simply use the gCost of the current node 
                     else
                     {
                         gCosts[i] = grid.grid[x, y].gCost;
                     }
                 }
-                
+
                 //left tile's distance - right tile's distance
                 grid.grid[x, y].NodeVector.x = (gCosts[2] - gCosts[3]);
 
-                //top tile's distance - left tile's distance
-                grid.grid[x, y].NodeVector.y = gCosts[0] - gCosts[1];
+                //top tile's distance - bottom tile's distance
+                grid.grid[x, y].NodeVector.y = gCosts[1] - gCosts[0];
 
                 grid.grid[x, y].NodeVector.Normalize();
             }
@@ -79,15 +104,17 @@ public class FlowFieldGenerator : MonoBehaviour {
 
     //for the flow field algorithm, we are looking for path distance, so when we are flood filling, we are just looking to fill 
     //in the number of path steps it takes from every node in the grid to reach the goal.
-    public void DijkstraFloodFill(Vector3 target)
+    public void BrushfireAlgorithm(Vector3 target)
     {
         List<Node> activeSet = new List<Node>();
         foreach(Node node in grid.grid)
         {
             node.gCost = 0;
+            node.startNode = false;
         }
         //get the target node
         Node targetNode = grid.NodeFromWorldPoint(target);
+        targetNode.startNode = true;
         //and add it to the active set
         activeSet.Add(targetNode);
 
@@ -97,7 +124,19 @@ public class FlowFieldGenerator : MonoBehaviour {
            
             Node toCheck = activeSet[0];
             //loop through the neighbour list of the front node of the active set
-            foreach(Node neighbour in grid.GetNeighbours(toCheck))
+            //get only the orthogonal neighbours
+            Node[] neighbourArr = grid.GetOrthogonalNeighbours(toCheck);
+            
+            List<Node> neighbours = new List<Node>();
+            //convert the array into a list (we have to loop through as there may be null members of the array)
+            for(int i = 0; i < 4; i++)
+            {
+                if (neighbourArr[i] == null)
+                    continue;
+                neighbours.Add(neighbourArr[i]);
+            }
+
+            foreach(Node neighbour in neighbours)
             { 
             
                 //if it already has a cost higher than 0, leave it at that because we just want the lowest number of steps to the target

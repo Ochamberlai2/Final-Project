@@ -427,9 +427,12 @@ MonoBehaviour:
   UnwalkableLayer:
     serializedVersion: 2
     m_Bits: 256
+  DrawGcost: 0
+  DrawFlowField: 0
   gridWorldSize: {x: 40, y: 40}
   nodeRadius: 0.5
-  GizmoColor: {r: 0.78676474, g: 0.115700714, b: 0.115700714, a: 1}
+  WalkableGridColor: {r: 0, g: 0, b: 0, a: 1}
+  UnwalkableGridColor: {r: 1, g: 0, b: 0, a: 1}
   gridSizeX: 0
   gridSizeY: 0
   maxSize: 0
