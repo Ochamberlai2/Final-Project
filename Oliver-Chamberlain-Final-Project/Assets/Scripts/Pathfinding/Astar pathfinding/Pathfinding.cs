@@ -6,7 +6,7 @@ using System;
 
 public class Pathfinding : MonoBehaviour
 {
-    HashSet<Node> closedSet;
+    HashSet<AstarNode> closedSet;
     PathRequestManager requestManager;
 
     Grid grid;
@@ -31,20 +31,20 @@ public class Pathfinding : MonoBehaviour
         bool pathSuccess = false;
 
         //get the position on the grid of both positions
-        Node startNode = grid.NodeFromWorldPoint(startPos);
-        Node targetNode = grid.NodeFromWorldPoint(targetPos);
+        AstarNode startNode = (AstarNode)grid.NodeFromWorldPoint(startPos);
+        AstarNode targetNode = (AstarNode)grid.NodeFromWorldPoint(targetPos);
         if (startNode.walkable && targetNode.walkable)
         {
             //set the open and closed sets then add the start node to the open set
-            Heap<Node> openSet = new Heap<Node>(grid.maxSize);
-            closedSet = new HashSet<Node>();
+            Heap<AstarNode> openSet = new Heap<AstarNode>(grid.maxSize);
+            closedSet = new HashSet<AstarNode>();
             openSet.Add(startNode);
 
             //while open set is not empty
             while (openSet.Count > 0)
             {
                 //set the current node to the first in the set
-                Node currentNode = openSet.RemoveFirst();
+                AstarNode currentNode = openSet.RemoveFirst();
                 closedSet.Add(currentNode);
 
                 //then we check to see if the current node is the target, if so return out
@@ -55,7 +55,7 @@ public class Pathfinding : MonoBehaviour
                     pathSuccess = true;
                     break;
                 }
-                foreach (Node neighbour in grid.GetNeighbours(currentNode))
+                foreach (AstarNode neighbour in grid.GetNeighbours(currentNode))
                 {
                     //search through all neighbours in order to see if they are walkable or in the closed set
                     if (!neighbour.walkable || closedSet.Contains(neighbour))
@@ -93,12 +93,12 @@ public class Pathfinding : MonoBehaviour
         requestManager.FinishedProcessingPath(waypoints, pathSuccess);
     }
 
-    Vector3[] retracePath(Node startNode, Node targetNode)
+    Vector3[] retracePath(AstarNode startNode, AstarNode targetNode)
     {
         //set an empty list
-        List<Node> path = new List<Node>();
+        List<AstarNode> path = new List<AstarNode>();
         //set the current node to being the target
-        Node currentNode = targetNode;
+        AstarNode currentNode = targetNode;
         //and while the current node isnt the start node
         while (currentNode != startNode)
         {
@@ -114,7 +114,7 @@ public class Pathfinding : MonoBehaviour
     }
 
 
-    Vector3[] simplifyPath(List<Node> path)
+    Vector3[] simplifyPath(List<AstarNode> path)
     {
         List<Vector3> waypoints = new List<Vector3>();
         Vector2 directionOld = Vector2.zero;
@@ -131,7 +131,7 @@ public class Pathfinding : MonoBehaviour
     }
 
     
-    int GetDistance(Node nodeA, Node nodeB)
+    int GetDistance(AstarNode nodeA, AstarNode nodeB)
     {
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);

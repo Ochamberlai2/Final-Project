@@ -33,6 +33,10 @@ public class Grid : MonoBehaviour {
     [HideInInspector]
     public int maxSize;
 
+    [Space]
+    [SerializeField]
+    private bool useAstarNode;
+
     private void Awake()
     {
         nodeDiameter = nodeRadius * 2;
@@ -57,7 +61,15 @@ public class Grid : MonoBehaviour {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, UnwalkableLayer));
 
-                grid[x, y] = new Node(worldPoint, new Vector2(x, y), walkable);
+                if(useAstarNode)
+                {
+                    grid[x, y] = new AstarNode(worldPoint, new Vector2(x, y), walkable);
+                }
+                else
+                {
+                    grid[x, y] = new PFNode(worldPoint, new Vector2(x, y), walkable);
+                }
+
             }
         }
     }
@@ -148,14 +160,16 @@ public class Grid : MonoBehaviour {
                 Gizmos.color = (node.walkable) ? WalkableGridColor : UnwalkableGridColor;
                 Gizmos.DrawWireCube(node.WorldPosition, new Vector3(0.95f,0,0.95f)* nodeDiameter);
 
-
-                if (DrawFlowField)
+                if(!useAstarNode)
                 {
-                    Ray ray = new Ray(node.WorldPosition, node.NodeVector);
-                    Gizmos.DrawRay(ray);    
-                }
-                if (node.NodeVector == Vector2.zero && node.searched && !node.startNode)
-                    Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - .1f));
+                    if (DrawFlowField)
+                    {
+                        Ray ray = new Ray(node.WorldPosition, (node as PFNode).NodeVector);
+                        Gizmos.DrawRay(ray);    
+                    }
+                    if ((node as PFNode).NodeVector == Vector2.zero && node.searched && !node.startNode)
+                        Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - .1f));
+                    }
             }
            
         }

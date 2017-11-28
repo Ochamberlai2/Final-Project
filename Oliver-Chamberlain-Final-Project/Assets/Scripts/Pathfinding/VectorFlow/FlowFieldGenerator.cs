@@ -1,17 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Diagnostics;
 
 public class FlowFieldGenerator : MonoBehaviour {
 
     Grid grid;
     public LineRenderer[,] flowField;
-
+    public int goalAttractionValueStart;
     public void Start()
     {
+        
         grid = FindObjectOfType<Grid>();
         flowField = new LineRenderer[grid.gridSizeX,grid.gridSizeY];
         GameObject lineRendererParent = GameObject.Find("Vector renderers");
+        //generate line renderers to represent each vector
         for(int x = 0; x < grid.gridSizeX; x++)
         {
             for(int y = 0; y < grid.gridSizeY; y++)
@@ -28,14 +31,19 @@ public class FlowFieldGenerator : MonoBehaviour {
     public void Update()
     {
     
-                if (Input.GetKeyDown(KeyCode.Mouse0))
+        //when left mouse is pressed, make a ray, then generate the vector field
+         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit rayhit = new RaycastHit();
             if (Physics.Raycast(ray, out rayhit))
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 BrushfireAlgorithm(rayhit.point);
                 GenerateFlowField();
+                sw.Stop();
+                UnityEngine.Debug.Log("Elapsed time: " + sw.ElapsedMilliseconds + " ms");
             }
         }
     }
@@ -50,7 +58,7 @@ public class FlowFieldGenerator : MonoBehaviour {
                 Vector3[] positions = new Vector3[2];
 
                 positions[0] = grid.grid[x, y].WorldPosition + new Vector3(0,.1f,0);
-                positions[1] =grid.grid[x, y].WorldPosition + new Vector3(grid.grid[x, y].NodeVector.x,.1f , (grid.grid[x, y].NodeVector.y));
+                positions[1] =grid.grid[x, y].WorldPosition + new Vector3((grid.grid[x, y] as PFNode).NodeVector.x,.1f , ((grid.grid[x, y]as PFNode).NodeVector.y));
 
                 flowField[x, y].SetPositions(positions);
             }
@@ -68,32 +76,51 @@ public class FlowFieldGenerator : MonoBehaviour {
                     continue;
 
 
-                //get the orthogonal neighbours
-                Node[] orthoNeighbours = grid.GetOrthogonalNeighbours(grid.grid[x, y]);
-                int[] gCosts = new int[4];
+                ////get the orthogonal neighbours
+                //Node[] orthoNeighbours = grid.GetOrthogonalNeighbours(grid.grid[x, y]);
+                //int[] gCosts = new int[4];
 
-                //loop through four times (for each of the orthogonal neighbours
-                for (int i = 0; i < 4; i++)
+                ////loop through four times (for each of the orthogonal neighbours
+                //for (int i = 0; i < 4; i++)
+                //{
+                //    //if the neighbour is null, that means that they are either on the edge of the grid or their neighbour is unwalkable
+                //    if (orthoNeighbours[i] != null)
+                //    {
+                //        gCosts[i] = orthoNeighbours[i].gCost;
+                //    }
+                //    //if it is null, then we simply use the gCost of the current node 
+                //    else
+                //    {
+                //        gCosts[i] =int.MaxValue /*grid.grid[x, y].gCost*/;
+                //    }
+                //}
+
+                ////left tile's distance - right tile's distance
+                //(grid.grid[x, y] as PFNode).NodeVector.x = (gCosts[2] - gCosts[3]);
+
+                ////top tile's distance - bottom tile's distance
+                //(grid.grid[x, y] as PFNode).NodeVector.y = gCosts[1] - gCosts[0];
+
+                //(grid.grid[x, y] as PFNode).NodeVector.Normalize();
+
+                Node closestNode = null;
+                int lowestGcost  = int.MaxValue;
+                foreach (Node node in grid.GetNeighbours(grid.NodeFromWorldPoint(grid.grid[x, y].WorldPosition)))
                 {
-                    //if the neighbour is null, that means that they are either on the edge of the grid or their neighbour is unwalkable
-                    if (orthoNeighbours[i] != null)
+                    if (!node.walkable)
+                        continue;
+                    if(node.gCost < lowestGcost)
                     {
-                        gCosts[i] = orthoNeighbours[i].gCost;
-                    }
-                    //if it is null, then we simply use the gCost of the current node 
-                    else
-                    {
-                        gCosts[i] = grid.grid[x, y].gCost;
+                        lowestGcost = node.gCost;
+                        closestNode = node;
                     }
                 }
-
-                //left tile's distance - right tile's distance
-                grid.grid[x, y].NodeVector.x = (gCosts[2] - gCosts[3]);
-
-                //top tile's distance - bottom tile's distance
-                grid.grid[x, y].NodeVector.y = gCosts[1] - gCosts[0];
-
-                grid.grid[x, y].NodeVector.Normalize();
+                if(closestNode != null)
+                {
+                    (grid.grid[x, y] as PFNode).NodeVector.x = closestNode.gridX - grid.grid[x, y].gridX;
+                    (grid.grid[x, y] as PFNode).NodeVector.y = closestNode.gridY - grid.grid[x, y].gridY;
+                    (grid.grid[x, y] as PFNode).NodeVector.Normalize();
+                }
             }
         }
     }

@@ -436,6 +436,7 @@ MonoBehaviour:
   gridSizeX: 0
   gridSizeY: 0
   maxSize: 0
+  useAstarNode: 1
 --- !u!4 &854998354
 Transform:
   m_ObjectHideFlags: 0

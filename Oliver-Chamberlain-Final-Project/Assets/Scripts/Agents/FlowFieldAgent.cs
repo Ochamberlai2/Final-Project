@@ -20,7 +20,7 @@ public class FlowFieldAgent : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        Vector2 desiredVelocity = grid.NodeFromWorldPoint(transform.position).NodeVector * velocityMultiplier;
+        Vector2 desiredVelocity = (grid.NodeFromWorldPoint(transform.position) as PFNode).NodeVector * velocityMultiplier;
             rb.velocity = new Vector3(desiredVelocity.x,0,desiredVelocity.y);
 
 	}
