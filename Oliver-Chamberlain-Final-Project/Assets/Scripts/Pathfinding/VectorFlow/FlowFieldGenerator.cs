@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
@@ -104,14 +103,14 @@ public class FlowFieldGenerator : MonoBehaviour {
                 //(grid.grid[x, y] as PFNode).NodeVector.Normalize();
 
                 Node closestNode = null;
-                int lowestGcost  = int.MaxValue;
+                int highestCost  = int.MinValue;
                 foreach (Node node in grid.GetNeighbours(grid.NodeFromWorldPoint(grid.grid[x, y].WorldPosition)))
                 {
                     if (!node.walkable)
-                        continue;
-                    if(node.gCost < lowestGcost)
+                        node.gCost = int.MinValue;
+                    if(node.gCost > highestCost)
                     {
-                        lowestGcost = node.gCost;
+                        highestCost = node.gCost;
                         closestNode = node;
                     }
                 }
@@ -120,6 +119,10 @@ public class FlowFieldGenerator : MonoBehaviour {
                     (grid.grid[x, y] as PFNode).NodeVector.x = closestNode.gridX - grid.grid[x, y].gridX;
                     (grid.grid[x, y] as PFNode).NodeVector.y = closestNode.gridY - grid.grid[x, y].gridY;
                     (grid.grid[x, y] as PFNode).NodeVector.Normalize();
+                }
+                else
+                {
+                    UnityEngine.Debug.Log("Closest node null, current node is: " + x + " , " + y);
                 }
             }
         }
@@ -170,7 +173,7 @@ public class FlowFieldGenerator : MonoBehaviour {
                 if (neighbour.gCost != 0 || neighbour == targetNode || !neighbour.walkable)
                     continue;          
 
-                neighbour.gCost = toCheck.gCost + 1;
+                neighbour.gCost = toCheck.gCost - 1;
                 activeSet.Add(neighbour);
             }
             toCheck.searched = true;

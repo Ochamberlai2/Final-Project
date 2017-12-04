@@ -147,18 +147,14 @@ public class Grid : MonoBehaviour {
             {
                 if (DrawGcost)
                 {
-                    Gizmos.color = (node.walkable)? Color.Lerp(Color.cyan,Color.black, (float)node.gCost/100) : Color.black;
+                    Gizmos.color = (node.walkable)? Color.Lerp(Color.black,Color.white, Mathf.Abs((float)node.gCost)/100) : Color.black;
                     Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0.1f,1) * (nodeDiameter - .1f));
-                    Handles.Label(node.WorldPosition + new Vector3(-nodeRadius, 5, nodeRadius),node.gCost.ToString());
                 }
                 if(node.startNode)
                 {
                     Gizmos.color = Color.green;
                     Gizmos.DrawSphere(node.WorldPosition, nodeRadius);
                 }
-
-                Gizmos.color = (node.walkable) ? WalkableGridColor : UnwalkableGridColor;
-                Gizmos.DrawWireCube(node.WorldPosition, new Vector3(0.95f,0,0.95f)* nodeDiameter);
 
                 if(!useAstarNode)
                 {
@@ -169,7 +165,11 @@ public class Grid : MonoBehaviour {
                     }
                     if ((node as PFNode).NodeVector == Vector2.zero && node.searched && !node.startNode)
                         Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - .1f));
-                    }
+                }
+
+                Gizmos.color = (node.walkable) ? WalkableGridColor : UnwalkableGridColor;
+                Gizmos.DrawWireCube(node.WorldPosition, new Vector3(0.95f,0,0.95f)* nodeDiameter);
+
             }
            
         }
