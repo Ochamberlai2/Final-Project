@@ -1,24 +1,21 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-
+using System.Linq;
 public class Grid : MonoBehaviour {
 
     public LayerMask UnwalkableLayer;
     #region DebugGizmos
     [SerializeField]
     private bool DrawGcost;
-    [SerializeField]
-    private bool DrawFlowField;
 #endregion
     [Header("Grid Attributes")]
-    public Vector2 gridWorldSize;
+    public Vector2 gridWorldSize; //the size of the grid in world space
     [Range(0, 2)]
     public float nodeRadius;
     [HideInInspector]
     public Node[,] grid;
 
+    //colours to represent each grid square
     [Space]
     [SerializeField]
     private Color WalkableGridColor;
@@ -27,11 +24,11 @@ public class Grid : MonoBehaviour {
 
     private float nodeDiameter;
     [HideInInspector]
-    public int gridSizeX;
+    public int gridSizeX;//size of the grid arrays x dimension
     [HideInInspector]
-    public int gridSizeY;
+    public int gridSizeY;//size of the grid arrays y dimension
     [HideInInspector]
-    public int maxSize;
+    public int maxSize;//the grids x size multiplied by the y
 
     [Space]
     [SerializeField]
@@ -61,6 +58,8 @@ public class Grid : MonoBehaviour {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, UnwalkableLayer));
 
+
+                //we use different derivatives of the node class depending on whether we will be running A* or potential field pathfinding
                 if(useAstarNode)
                 {
                     grid[x, y] = new AstarNode(worldPoint, new Vector2(x, y), walkable);
@@ -142,29 +141,21 @@ public class Grid : MonoBehaviour {
 
         if (grid != null)
         {
-        
             foreach(Node node in grid)
             {
                 if (DrawGcost)
                 {
-                    Gizmos.color = (node.walkable)? Color.Lerp(Color.black,Color.white, Mathf.Abs((float)node.gCost)/100) : Color.black;
-                    Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0.1f,1) * (nodeDiameter - .1f));
+                    float normalisedCost = ((float)FlowFieldGenerator.Instance.goalCostField[node.gridX, node.gridY]
+                        - (float)FlowFieldGenerator.Instance.staticObstacleCostField[node.gridX, node.gridY])
+                        / (float)FlowFieldGenerator.Instance.goalFieldStrength;
+
+                    Gizmos.color = (node.walkable)? Color.Lerp(Color.black,Color.white, normalisedCost) : Color.black;
+                    Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0,1) * (nodeDiameter - .1f));
                 }
                 if(node.startNode)
                 {
                     Gizmos.color = Color.green;
                     Gizmos.DrawSphere(node.WorldPosition, nodeRadius);
-                }
-
-                if(!useAstarNode)
-                {
-                    if (DrawFlowField)
-                    {
-                        Ray ray = new Ray(node.WorldPosition, (node as PFNode).NodeVector);
-                        Gizmos.DrawRay(ray);    
-                    }
-                    if ((node as PFNode).NodeVector == Vector2.zero && node.searched && !node.startNode)
-                        Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - .1f));
                 }
 
                 Gizmos.color = (node.walkable) ? WalkableGridColor : UnwalkableGridColor;
