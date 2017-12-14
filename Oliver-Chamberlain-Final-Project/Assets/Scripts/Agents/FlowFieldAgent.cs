@@ -18,23 +18,20 @@ public class FlowFieldAgent : MonoBehaviour {
         grid = FindObjectOfType<Grid>();
     }
 
-    // Update is called once per frame
     void FixedUpdate ()
     {
         desiredVelocity = FindNextNode() * velocityMultiplier;
-        //Vector2 desiredVelocity = (grid.NodeFromWorldPoint(transform.position) as PFNode).NodeVector * velocityMultiplier;
-        //    rb.velocity = new Vector3(desiredVelocity.x,0,desiredVelocity.y);
-        rb.velocity = new Vector3(desiredVelocity.x,0,desiredVelocity.z);
        
+        rb.velocity = new Vector3(desiredVelocity.x,0,desiredVelocity.z);
 
 	}
     //returns a normalised vector pointing to the cheapest node
     public Vector3 FindNextNode()
     {
-        Node colonistNode = grid.NodeFromWorldPoint(transform.position);
+        Node agentNode = grid.NodeFromWorldPoint(transform.position);
         Node closestNode = null;
-        float bestCost = colonistNode.gCost;
-        foreach (Node node in grid.GetNeighbours(colonistNode))
+        float bestCost = agentNode.gCost;
+        foreach (Node node in grid.GetNeighbours(agentNode))
         {
             if (!node.walkable)
                 continue;
