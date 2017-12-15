@@ -145,9 +145,9 @@ public class Grid : MonoBehaviour {
             {
                 if (DrawGcost)
                 {
-                    float normalisedCost = ((float)FlowFieldGenerator.Instance.goalCostField[node.gridX, node.gridY]
-                        - (float)FlowFieldGenerator.Instance.staticObstacleCostField[node.gridX, node.gridY])
-                        / (float)FlowFieldGenerator.Instance.goalFieldStrength;
+                    float normalisedCost = ((float)CostFieldGenerator.Instance.goalCostField[node.gridX, node.gridY]
+                        - (float)CostFieldGenerator.Instance.staticObstacleCostField[node.gridX, node.gridY])
+                        / (float)CostFieldGenerator.Instance.goalFieldStrength;
 
                     Gizmos.color = (node.walkable)? Color.Lerp(Color.black,Color.white, normalisedCost) : Color.black;
                     Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0,1) * (nodeDiameter - .1f));

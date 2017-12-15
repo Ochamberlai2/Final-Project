@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class FlowFieldGenerator : MonoBehaviour
+public class CostFieldGenerator : MonoBehaviour
 {
 
     Grid grid;
@@ -21,22 +21,22 @@ public class FlowFieldGenerator : MonoBehaviour
     [SerializeField]
     private Text goalCostFieldText;
 
-    private static FlowFieldGenerator instance;
+    private static CostFieldGenerator instance;
 
-    public static FlowFieldGenerator Instance
+    public static CostFieldGenerator Instance
     {
         get
         {
             //if instance is null try to find something that can be the instance
             if (instance == null)
             {
-                instance = FindObjectOfType<FlowFieldGenerator>();
+                instance = FindObjectOfType<CostFieldGenerator>();
                 //if not, then make a new object and add a component to it which becomes the instance
                 if (instance == null)
                 {
                     GameObject newGameObject = new GameObject();
                     newGameObject.name = "FlowFieldGenerator";
-                    instance = newGameObject.AddComponent<FlowFieldGenerator>();
+                    instance = newGameObject.AddComponent<CostFieldGenerator>();
                 }
             }
             //then return it
@@ -45,7 +45,7 @@ public class FlowFieldGenerator : MonoBehaviour
     }
 
 
-    public void Start()
+    public void Awake()
     {
 
         grid = FindObjectOfType<Grid>();
@@ -191,8 +191,8 @@ public class FlowFieldGenerator : MonoBehaviour
             }
             foreach (Node neighbour in neighbours)
             {
-                //if  the current cost -1 is 0, then we have already faded to zero and we dont need to check any other nodes            
-                if (staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] -1  <= 0)
+                //if  the current cost -2 is 0, then we have already faded to zero and we dont need to check any other nodes            
+                if (staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] -2  <= 0)
                 {
                     continue;
                 }
@@ -200,8 +200,8 @@ public class FlowFieldGenerator : MonoBehaviour
                 if ( !neighbour.walkable || staticObstacleCostField[neighbour.gridX,neighbour.gridY] != 0)
                     continue;
 
-                neighbour.gCost = nodeToCheck.gCost - 1;
-                staticObstacleCostField[neighbour.gridX, neighbour.gridY] = staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] - 1;
+                neighbour.gCost = nodeToCheck.gCost - 2;
+                staticObstacleCostField[neighbour.gridX, neighbour.gridY] = staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] - 2;
                 openSet.Add(neighbour);
             }
             nodeToCheck.searched = true;

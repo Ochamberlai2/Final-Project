@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalFieldStrength: 50
-  staticObstacleFieldStrength: 3
+  staticObstacleFieldStrength: 4
   goalCostFieldText: {fileID: 0}
 --- !u!1 &169945221
 GameObject:
