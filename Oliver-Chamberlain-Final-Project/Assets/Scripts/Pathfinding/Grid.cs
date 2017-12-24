@@ -5,8 +5,9 @@ public class Grid : MonoBehaviour {
 
     public LayerMask UnwalkableLayer;
     #region DebugGizmos
-    [SerializeField]
-    private bool DrawGcost;
+
+    [HideInInspector]
+    public bool DrawGcost;
 #endregion
     [Header("Grid Attributes")]
     public Vector2 gridWorldSize; //the size of the grid in world space
@@ -149,7 +150,16 @@ public class Grid : MonoBehaviour {
                         - (float)CostFieldGenerator.Instance.staticObstacleCostField[node.gridX, node.gridY])
                         / (float)CostFieldGenerator.Instance.goalFieldStrength;
 
-                    Gizmos.color = (node.walkable)? Color.Lerp(Color.black,Color.white, normalisedCost) : Color.black;
+                    //if the nodes cost is more than zero, lerp between black and red
+                    if(normalisedCost >= 0)
+                    {
+                        Gizmos.color = (node.walkable)? Color.Lerp(Color.black,Color.red, normalisedCost) : Color.black;
+                    }
+                    //otherwise lerp between black and blue
+                    else
+                    {
+                        Gizmos.color = (node.walkable) ? Color.Lerp(Color.black, Color.white, normalisedCost) : Color.black;
+                    }
                     Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0,1) * (nodeDiameter - .1f));
                 }
                 if(node.startNode)
@@ -164,6 +174,14 @@ public class Grid : MonoBehaviour {
             }
            
         }
+    }
+    //for UI interfacing purposes
+    public void ShowHeatMap(bool show)
+    {
+        if (show)
+            DrawGcost = true;
+        else
+            DrawGcost = false;
     }
 
 }

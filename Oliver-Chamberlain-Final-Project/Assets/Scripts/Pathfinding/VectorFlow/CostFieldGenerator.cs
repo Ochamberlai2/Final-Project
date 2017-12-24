@@ -16,10 +16,16 @@ public class CostFieldGenerator : MonoBehaviour
     public int staticObstacleFieldStrength;
 
     #endregion
+
+    #region UI bools
+    bool showStaticField;
+    bool showGoalField;
+
+#endregion
+
     public TextMesh[,] flowFieldCostText;
 
-    [SerializeField]
-    private Text goalCostFieldText;
+    GameObject textMeshParent;
 
     private static CostFieldGenerator instance;
 
@@ -52,7 +58,7 @@ public class CostFieldGenerator : MonoBehaviour
         goalCostField = new int[grid.gridSizeX, grid.gridSizeY];
         staticObstacleCostField = new int[grid.gridSizeX, grid.gridSizeY];
         flowFieldCostText = new TextMesh[grid.gridSizeX, grid.gridSizeY];
-        GameObject textMeshParent = GameObject.Find("TextMeshes");
+        textMeshParent = GameObject.Find("TextMeshes");
 
         //generate line renderers to represent each vector
         for (int x = 0; x < grid.gridSizeX; x++)
@@ -85,18 +91,38 @@ public class CostFieldGenerator : MonoBehaviour
             {
                 GenerateGoalField(rayhit.point);
                 setTextMeshText();
-
             }
         }
     }
 
     public void setTextMeshText()
     {
+        if(!showGoalField && !showStaticField)
+        {
+            textMeshParent.SetActive(false);
+        }
+        else
+        {
+            textMeshParent.SetActive(true);
+        }
+
         for (int x = 0; x < grid.gridSizeX; x++)
         {
             for (int y = 0; y < grid.gridSizeY; y++)
             {
-                flowFieldCostText[x, y].text = (goalCostField[x, y] - staticObstacleCostField[x,y]).ToString();
+
+                if (showGoalField && showStaticField)
+                {
+                    flowFieldCostText[x, y].text = (goalCostField[x, y] + staticObstacleCostField[x, y]).ToString();
+                }
+                else if (showGoalField && !showStaticField)
+                {
+                    flowFieldCostText[x, y].text = goalCostField[x, y].ToString();
+                }
+                else if(!showGoalField && showStaticField)
+                {
+                    flowFieldCostText[x, y].text =  staticObstacleCostField[x, y].ToString();
+                }
             }
         }
     }
@@ -109,14 +135,12 @@ public class CostFieldGenerator : MonoBehaviour
         List<Node> activeSet = new List<Node>();
         foreach (Node node in grid.grid)
         {
-            node.gCost = 0;
             goalCostField[node.gridX, node.gridY] = 0;
             node.startNode = false;
         }
         //get the target node
         Node targetNode = grid.NodeFromWorldPoint(target);
         targetNode.startNode = true;
-        targetNode.gCost = goalFieldStrength;
         goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldStrength;
         //and add it to the active set
         activeSet.Add(targetNode);
@@ -129,29 +153,21 @@ public class CostFieldGenerator : MonoBehaviour
             //get only the orthogonal neighbours
             Node[] neighbourArr = grid.GetOrthogonalNeighbours(toCheck);
 
-            List<Node> neighbours = new List<Node>();
-            //convert the array into a list (we have to loop through as there may be null members of the array)
-            for (int i = 0; i < 4; i++)
-            {
-                if (neighbourArr[i] == null)
-                    continue;
-                neighbours.Add(neighbourArr[i]);
-            }
 
-            foreach (Node neighbour in neighbours)
+            for (int i = 0; i < neighbourArr.Length; i++)
             {
+                
                 //if  the current cost -1 is 0, then we have already faded to zero and we dont need to check any other nodes            
-                if (toCheck.gCost - 1 <= 0)
+                if (goalCostField[toCheck.gridX,toCheck.gridY] <= 0)
                 {
                     return;
                 }
                 //if it already has a cost higher than 0, leave it at that because we just want the lowest number of steps to the target
-                if (neighbour.gCost != 0 || neighbour == targetNode || !neighbour.walkable)
+                if (neighbourArr[i] == null || goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] != 0 || neighbourArr[i] == targetNode || !neighbourArr[i].walkable)
                     continue;
 
-                neighbour.gCost = toCheck.gCost - 1;
-                goalCostField[neighbour.gridX, neighbour.gridY] = toCheck.gCost - 1;
-                activeSet.Add(neighbour);
+                goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] = goalCostField[toCheck.gridX,toCheck.gridY] - 1;
+                activeSet.Add(neighbourArr[i]);
             }
             toCheck.searched = true;
             activeSet.Remove(toCheck);
@@ -169,7 +185,7 @@ public class CostFieldGenerator : MonoBehaviour
                 //look for unwalkable nodes because we only need the unwalkable nodes to generate the field
                 if (grid.grid[x, y].walkable)
                     continue;
-                staticObstacleCostField[x, y] = staticObstacleFieldStrength;
+                staticObstacleCostField[x, y] = -staticObstacleFieldStrength;
                 openSet.Add(grid.grid[x, y]);
 
             }
@@ -192,7 +208,7 @@ public class CostFieldGenerator : MonoBehaviour
             foreach (Node neighbour in neighbours)
             {
                 //if  the current cost -2 is 0, then we have already faded to zero and we dont need to check any other nodes            
-                if (staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] -2  <= 0)
+                if (staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] +2  >= 0)
                 {
                     continue;
                 }
@@ -200,12 +216,25 @@ public class CostFieldGenerator : MonoBehaviour
                 if ( !neighbour.walkable || staticObstacleCostField[neighbour.gridX,neighbour.gridY] != 0)
                     continue;
 
-                neighbour.gCost = nodeToCheck.gCost - 2;
-                staticObstacleCostField[neighbour.gridX, neighbour.gridY] = staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] - 2;
+                staticObstacleCostField[neighbour.gridX, neighbour.gridY] = staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] + 2;
                 openSet.Add(neighbour);
             }
             nodeToCheck.searched = true;
             openSet.Remove(nodeToCheck);
         }
     }
+
+
+    #region UI interfacing functions
+    public void ShowStaticCostField(bool show)
+    {
+        showStaticField = show;
+    }
+    public void ShowGoalCostField(bool show)
+    {
+        showGoalField = show;
+    }
+
+#endregion
+
 }
