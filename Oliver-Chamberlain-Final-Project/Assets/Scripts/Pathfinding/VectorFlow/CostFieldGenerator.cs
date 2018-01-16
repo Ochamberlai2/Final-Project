@@ -71,7 +71,7 @@ public class CostFieldGenerator : MonoBehaviour
                 flowFieldCostText[x, y] = new GameObject().AddComponent<TextMesh>();
                 flowFieldCostText[x, y].transform.SetParent(textMeshParent.transform);
                 flowFieldCostText[x, y].gameObject.name = "(" + x + "," + y + ")";
-                flowFieldCostText[x, y].transform.position = grid.grid[x, y].WorldPosition;
+                flowFieldCostText[x, y].transform.position = new Vector3(grid.grid[x, y].WorldPosition.x - (grid.nodeRadius/2), grid.grid[x, y].WorldPosition.y , grid.grid[x, y].WorldPosition.z + (grid.nodeRadius/2));
                 flowFieldCostText[x, y].transform.Rotate(Vector3.right, 90);
 
             }
