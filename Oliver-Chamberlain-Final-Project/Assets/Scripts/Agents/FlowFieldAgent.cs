@@ -15,8 +15,8 @@ public class FlowFieldAgent : MonoBehaviour {
     private Node recentlyVisitedNode;
 
 
-    public int bestcost;
-    public int currentNodeCost;
+    public double bestcost;
+    public double currentNodeCost;
 
 
     private void Start()
@@ -43,7 +43,7 @@ public class FlowFieldAgent : MonoBehaviour {
         Node agentNode = grid.NodeFromWorldPoint(transform.position);
         Node[] neighbourList = grid.GetNeighbours(agentNode).ToArray();
         Node bestNode = null;
-        int bestCost = 0;
+        double bestCost = 0;
          for(int i = 0; i < neighbourList.Length; i++)
         {
             if (!neighbourList[i].walkable || neighbourList[i] == null)
