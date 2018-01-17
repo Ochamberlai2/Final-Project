@@ -148,7 +148,7 @@ public class Grid : MonoBehaviour {
                 {
                     float normalisedCost = ((float)CostFieldGenerator.Instance.goalCostField[node.gridX, node.gridY]
                         - (float)CostFieldGenerator.Instance.staticObstacleCostField[node.gridX, node.gridY])
-                        / (float)CostFieldGenerator.Instance.goalFieldStrength;
+                        / (float)CostFieldGenerator.Instance.goalFieldMass;
 
                     //if the nodes cost is more than zero, lerp between black and red
                     if(normalisedCost >= 0)

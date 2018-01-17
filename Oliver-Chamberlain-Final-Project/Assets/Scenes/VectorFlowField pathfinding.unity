@@ -531,8 +531,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df1715e5503b47c4c8d246beaa86df47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goalFieldStrength: 60
-  staticObstacleFieldStrength: 6
+  goalFieldMass: 60
+  staticFieldMass: 2
+  staticFieldInfluence: 5
 --- !u!1 &169945221
 GameObject:
   m_ObjectHideFlags: 0

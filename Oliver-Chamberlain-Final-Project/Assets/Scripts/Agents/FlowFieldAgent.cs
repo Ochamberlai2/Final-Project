@@ -58,11 +58,11 @@ public class FlowFieldAgent : MonoBehaviour {
                 //and set the current best cost
                 bestCost = CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY];
             }
-
             /*
              * Need to change the below code, this was an attempt  to fix the local minima problem
              * however the tie breaker doesnt always work so something else needs to be done
              */
+    /*
 
             //in the case that there is a situation where two nodes are equal, as a tiebreaker we will try to choose the node with the best cost to the goal
             else if(CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY] == bestCost)
@@ -91,7 +91,8 @@ public class FlowFieldAgent : MonoBehaviour {
             //
             //return the normalized directional vector between the best node's position and the agents current node
             return (bestNode.WorldPosition - agentNode.WorldPosition).normalized;
-        }
+    */    
+         }
         //if a best node cannot be returned, return no movement
         return Vector3.zero;
     }

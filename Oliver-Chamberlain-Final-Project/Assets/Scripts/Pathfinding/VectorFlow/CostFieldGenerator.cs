@@ -11,10 +11,12 @@ public class CostFieldGenerator : MonoBehaviour
 
     #region field variables
     public double[,] goalCostField;//represents the gravitational force of each grid tile in relation to the goal node
-    public double goalFieldStrength;
+    public double goalFieldMass;
 
     public double[,] staticObstacleCostField;//represents the gravitational force of each grid tile in relation to the closest obstacle node
-    public int staticObstacleFieldStrength;
+    public double staticFieldMass;
+    [SerializeField]
+    private float staticFieldInfluence;
 
     private const float AgentMass = 1.5f;
     
@@ -123,6 +125,12 @@ public class CostFieldGenerator : MonoBehaviour
         {
             for (int y = 0; y < grid.gridSizeY; y++)
             {
+                if (!grid.grid[x, y].walkable)
+                {
+                    flowFieldCostText[x, y].text = "-inf";
+                    continue;
+                }
+
 
                 if (showGoalField && showStaticField)
                 {
@@ -154,7 +162,7 @@ public class CostFieldGenerator : MonoBehaviour
         //get the target node
         Node targetNode = grid.NodeFromWorldPoint(target);
         targetNode.startNode = true;
-        goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldStrength;
+        goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldMass;
         //and add it to the active set
         activeSet.Add(targetNode);
 
@@ -185,10 +193,11 @@ public class CostFieldGenerator : MonoBehaviour
 
                 //generate r^2 for the below equation
                 float distBetweenObjects = (targetNode.WorldPosition - neighbourArr[i].WorldPosition).magnitude;
+                //then square it
                 distBetweenObjects = Mathf.Pow(distBetweenObjects, 2);
 
                 //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
-                double force = GravitationalConstant * ((goalFieldStrength * AgentMass) /distBetweenObjects);
+                double force = GravitationalConstant * ((goalFieldMass * AgentMass) /distBetweenObjects);
                 goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] = force;
                 activeSet.Add(neighbourArr[i]);
             }
@@ -213,6 +222,7 @@ public class CostFieldGenerator : MonoBehaviour
 
                 int numUnwalkable = 0;//tracks the number of unwalkable nodes 
                 List<Node> neighbours = grid.GetNeighbours(grid.grid[x, y]);//the octagonal neighbours of the current node
+
                 //then loop through every neighbour node of the current node
                 foreach (Node neighbour in neighbours)
                 {
@@ -229,8 +239,10 @@ public class CostFieldGenerator : MonoBehaviour
                     continue;
                 }
 
-               // staticObstacleCostField[x, y] = -staticObstacleFieldStrength;
+               ;
                 obstacleNodes.Add(grid.grid[x, y]);
+                //set the unwalkable node to -infinity (because it is a negatively charged field)
+                staticObstacleCostField[x, y] = double.MinValue;
 
             }//end of y for
         }//end of x for
@@ -239,64 +251,42 @@ public class CostFieldGenerator : MonoBehaviour
       
         for (int i = 0; i < obstacleNodes.Count; i++)
         {
-            openSet.AddRange(grid.GetNeighbours(obstacleNodes[i]));
+            openSet.AddRange(grid.GetNeighbours(obstacleNodes[i]));///change the array accessor back to i when done debugging this function///
             while (openSet.Count > 0)
             {
 
                 Node nodeToCheck = openSet[0];//set the checking node to the first node in the list
-
-
 
                 //get all orthogonal neighbours of this node
                 List<Node> neighbours = grid.GetNeighbours(nodeToCheck);
 
                 for (int j = 0; j < neighbours.Count; j++)
                 {
-                    //check to see if the entry is null, as this is a possibility at the edge of the map or in the case of an unwalkable node
-                    if (neighbours[j] == null  || !neighbours[j].walkable || staticObstacleCostField[neighbours[i].gridX, neighbours[i].gridY] != 0)
+                   //check that the entry is not null, is walkable and the grid node associated with it does not already have a value
+                    if (neighbours[j] == null  || !neighbours[j].walkable || staticObstacleCostField[neighbours[j].gridX, neighbours[j].gridY] != 0)
                     {
                         continue;
                     }
                     //generate r^2 for the below equation
                     float distBetweenObjects = Vector3.Distance(obstacleNodes[i].WorldPosition,neighbours[j].WorldPosition);
 
-                    if(distBetweenObjects <= 4)//this should stop the field from acting past a 2 node radius 
-                        openSet.Add(neighbours[j]);
-
+                    if (distBetweenObjects >= staticFieldInfluence)//this should stop the field from acting past a 2 node radius 
+                        continue;
+                    //then square the distance
                     distBetweenObjects = Mathf.Pow(distBetweenObjects, 2);
                     //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
-                    double force = GravitationalConstant * ((staticObstacleFieldStrength * AgentMass) / distBetweenObjects);
+                    double force = GravitationalConstant * ((staticFieldMass * AgentMass) / distBetweenObjects);
 
-                  
-                     staticObstacleCostField[neighbours[j].gridX, neighbours[j].gridY] = -force;
+                    //if the negative force is greater than the already stored negative force, then update it
+                    if(-force < staticObstacleCostField[neighbours[j].gridX,neighbours[j].gridY])
+                    {
+                            staticObstacleCostField[neighbours[j].gridX, neighbours[j].gridY] = -force;
+                    }
+                         openSet.Add(neighbours[j]);
                 }
                 openSet.Remove(nodeToCheck);
                 nodeToCheck.searched = true;
 
-                //List<Node> neighbours = new List<Node>();
-                ////convert the array into a list (we have to loop through as there may be null members of the array)
-                //for (int i = 0; i < 4; i++)
-                //{
-                //    if (neighbourArr[i] == null)
-                //        continue;
-                //    neighbours.Add(neighbourArr[i]);
-                //}
-                //foreach (Node neighbour in neighbours)
-                //{
-                //    //if  the current cost -2 is 0, then we have already faded to zero and we dont need to check any other nodes            
-                //    if (staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] +2  >= 0)
-                //    {
-                //        continue;
-                //    }
-                //    //if the neighbour isnt walkable, just ignore it
-                //    if ( !neighbour.walkable || staticObstacleCostField[neighbour.gridX,neighbour.gridY] != 0)
-                //        continue;
-
-                //    staticObstacleCostField[neighbour.gridX, neighbour.gridY] = staticObstacleCostField[nodeToCheck.gridX,nodeToCheck.gridY] + 2;
-                //    openSet.Add(neighbour);
-                //}
-                //nodeToCheck.searched = true;
-                //openSet.Remove(nodeToCheck);
 
 
             }//end of while
