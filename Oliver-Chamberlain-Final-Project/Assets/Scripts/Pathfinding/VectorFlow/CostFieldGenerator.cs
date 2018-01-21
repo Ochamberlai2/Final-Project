@@ -194,7 +194,7 @@ public class CostFieldGenerator : MonoBehaviour
                 //generate r^2 for the below equation
                 float distBetweenObjects = (targetNode.WorldPosition - neighbourArr[i].WorldPosition).magnitude;
                 //then square it
-                distBetweenObjects = Mathf.Pow(distBetweenObjects, 2);
+                distBetweenObjects = distBetweenObjects * distBetweenObjects;
 
                 //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
                 double force = GravitationalConstant * ((goalFieldMass * AgentMass) /distBetweenObjects);
@@ -238,8 +238,6 @@ public class CostFieldGenerator : MonoBehaviour
                 {
                     continue;
                 }
-
-               ;
                 obstacleNodes.Add(grid.grid[x, y]);
                 //set the unwalkable node to -infinity (because it is a negatively charged field)
                 staticObstacleCostField[x, y] = double.MinValue;
@@ -273,7 +271,7 @@ public class CostFieldGenerator : MonoBehaviour
                     if (distBetweenObjects >= staticFieldInfluence)//this should stop the field from acting past a 2 node radius 
                         continue;
                     //then square the distance
-                    distBetweenObjects = Mathf.Pow(distBetweenObjects, 2);
+                    distBetweenObjects = distBetweenObjects * distBetweenObjects;
                     //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
                     double force = GravitationalConstant * ((staticFieldMass * AgentMass) / distBetweenObjects);
 
