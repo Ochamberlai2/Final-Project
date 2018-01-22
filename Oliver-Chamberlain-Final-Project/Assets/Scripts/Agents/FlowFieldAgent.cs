@@ -15,7 +15,7 @@ public class FlowFieldAgent : MonoBehaviour {
     private Node recentlyVisitedNode;
 
 
-    public double bestcost;
+   // public double bestcost;
     public double currentNodeCost;
 
 
@@ -34,6 +34,7 @@ public class FlowFieldAgent : MonoBehaviour {
 
             rb.velocity = new Vector3(desiredVelocity.x, 0, desiredVelocity.z);
 
+
             yield return new WaitForFixedUpdate();
         }
     }
@@ -43,56 +44,44 @@ public class FlowFieldAgent : MonoBehaviour {
         Node agentNode = grid.NodeFromWorldPoint(transform.position);
         Node[] neighbourList = grid.GetNeighbours(agentNode).ToArray();
         Node bestNode = null;
-        double bestCost = 0;
-         for(int i = 0; i < neighbourList.Length; i++)
+        float bestCost = 0;
+        //loop through the neighbours of the node the agent is positioned upon
+        for (int i = 0; i < neighbourList.Length; i++)
         {
+            //if the node is non walkable or null, ignore it
             if (!neighbourList[i].walkable || neighbourList[i] == null)
                 continue;
 
-
-            //if the sum of the relevant fields + the recent node cost (-1 to add a weak negative field to push the agent along in case of local optima) is greater than the current best cost
-            if(CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY] > bestCost)
+            //get the value attributed to the node based upon the relevant fields
+            float neighbourValue = CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY];
+            //if the sum of the relevant fields is more attractive than the currently most attractive node's value
+            if (neighbourValue> bestCost)
             {
                 //then set the new closest node
                 bestNode = neighbourList[i];
                 //and set the current best cost
-                bestCost = CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY];
+                bestCost = neighbourValue;
             }
-            /*
-             * Need to change the below code, this was an attempt  to fix the local minima problem
-             * however the tie breaker doesnt always work so something else needs to be done
-             */
-    /*
-
-            //in the case that there is a situation where two nodes are equal, as a tiebreaker we will try to choose the node with the best cost to the goal
-            else if(CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY] == bestCost)
+            //if the neighbour's value is the same as the best cost then take the one with the lowest PHYSICAL distance
+            else if(neighbourValue == bestCost && bestNode != null)
             {
-                //if there isnt a best node currently assigned, or the best node is already better than the node we are comparing against, check the next node.
-                if(bestNode == null || CostFieldGenerator.Instance.goalCostField[bestNode.gridX,bestNode.gridY] >= CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY])
+                int dst1 = CostFieldGenerator.Instance.manhattanDistanceFromGoal[neighbourList[i].gridX, neighbourList[i].gridY];
+                int dst2 = CostFieldGenerator.Instance.manhattanDistanceFromGoal[bestNode.gridX, bestNode.gridY];
+                if(dst1 < dst2)
                 {
-                    continue;
-                }
-                //otherwise the recently checked node is better than the current best, so assign it as the new best
-                else
-                {
-                    //set the new closest node
                     bestNode = neighbourList[i];
-                    //set the current best cost
-                    bestCost = CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY];
                 }
             }
-        }
+        }       
+        
         if (bestNode != null)
         {
-            //
-            bestcost = bestCost;
+            
             recentlyVisitedNode = bestNode;
             currentNodeCost = CostFieldGenerator.Instance.goalCostField[agentNode.gridX, agentNode.gridY] + CostFieldGenerator.Instance.staticObstacleCostField[agentNode.gridX, agentNode.gridY];
-            //
             //return the normalized directional vector between the best node's position and the agents current node
             return (bestNode.WorldPosition - agentNode.WorldPosition).normalized;
-    */    
-         }
+        }
         //if a best node cannot be returned, return no movement
         return Vector3.zero;
     }

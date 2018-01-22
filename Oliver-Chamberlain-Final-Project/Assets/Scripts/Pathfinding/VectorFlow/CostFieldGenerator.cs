@@ -8,21 +8,23 @@ public class CostFieldGenerator : MonoBehaviour
 
     Grid grid;
 
+    public Vector3 targetPos;
 
     #region field variables
-    public double[,] goalCostField;//represents the gravitational force of each grid tile in relation to the goal node
-    public double goalFieldMass;
+    public float[,] goalCostField;//represents the gravitational force of each grid tile in relation to the goal node
+    public float goalFieldMass;
 
-    public double[,] staticObstacleCostField;//represents the gravitational force of each grid tile in relation to the closest obstacle node
-    public double staticFieldMass;
+    public float[,] staticObstacleCostField;//represents the gravitational force of each grid tile in relation to the closest obstacle node
+    public float staticFieldMass;
     [SerializeField]
     private float staticFieldInfluence;
 
+    public int[,] manhattanDistanceFromGoal;//this will be used as a tiebreaker in the event of local minima
+
     private const float AgentMass = 1.5f;
     
-
     //in order to generate any real level of gravitational force, I have multiplied the gravitational constant by many magnitudes
-    private const double GravitationalConstant = 6.67408;
+    private const float GravitationalConstant = 6.67408f;
     #endregion
 
     #region UI bools
@@ -63,8 +65,9 @@ public class CostFieldGenerator : MonoBehaviour
     {
 
         grid = FindObjectOfType<Grid>();
-        goalCostField = new double[grid.gridSizeX, grid.gridSizeY];
-        staticObstacleCostField = new double[grid.gridSizeX, grid.gridSizeY];
+        goalCostField = new float[grid.gridSizeX, grid.gridSizeY];
+        staticObstacleCostField = new float[grid.gridSizeX, grid.gridSizeY];
+        manhattanDistanceFromGoal = new int[grid.gridSizeX, grid.gridSizeY];
         flowFieldCostText = new TextMesh[grid.gridSizeX, grid.gridSizeY];
         textMeshParent = GameObject.Find("TextMeshes");
 
@@ -161,8 +164,14 @@ public class CostFieldGenerator : MonoBehaviour
         }
         //get the target node
         Node targetNode = grid.NodeFromWorldPoint(target);
+        ////////////////////////////////
+        targetPos = targetNode.WorldPosition;
+        ///////////////////////////////
         targetNode.startNode = true;
+        //set the value of the target node.
         goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldMass;
+        //the manhattan distance from the goal is always going to be 0 as it is the goal node
+        manhattanDistanceFromGoal[targetNode.gridX, targetNode.gridY] = 0;
         //and add it to the active set
         activeSet.Add(targetNode);
 
@@ -187,8 +196,9 @@ public class CostFieldGenerator : MonoBehaviour
                 if (neighbourArr[i] == null || goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] != 0 || neighbourArr[i] == targetNode || !neighbourArr[i].walkable)
                     continue;
 
-                //goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] = goalCostField[toCheck.gridX,toCheck.gridY] - 1;
-                //activeSet.Add(neighbourArr[i]);
+                //set the manhattan distance value
+                manhattanDistanceFromGoal[neighbourArr[i].gridX, neighbourArr[i].gridY] = manhattanDistanceFromGoal[toCheck.gridX,toCheck.gridY] + 1;
+              
 
 
                 //generate r^2 for the below equation
@@ -197,7 +207,7 @@ public class CostFieldGenerator : MonoBehaviour
                 distBetweenObjects = distBetweenObjects * distBetweenObjects;
 
                 //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
-                double force = GravitationalConstant * ((goalFieldMass * AgentMass) /distBetweenObjects);
+                float force = GravitationalConstant * ((goalFieldMass * AgentMass) /distBetweenObjects);
                 goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] = force;
                 activeSet.Add(neighbourArr[i]);
             }
@@ -240,7 +250,7 @@ public class CostFieldGenerator : MonoBehaviour
                 }
                 obstacleNodes.Add(grid.grid[x, y]);
                 //set the unwalkable node to -infinity (because it is a negatively charged field)
-                staticObstacleCostField[x, y] = double.MinValue;
+                staticObstacleCostField[x, y] = float.MinValue;
 
             }//end of y for
         }//end of x for
@@ -261,7 +271,7 @@ public class CostFieldGenerator : MonoBehaviour
                 for (int j = 0; j < neighbours.Count; j++)
                 {
                    //check that the entry is not null, is walkable and the grid node associated with it does not already have a value
-                    if (neighbours[j] == null  || !neighbours[j].walkable || staticObstacleCostField[neighbours[j].gridX, neighbours[j].gridY] != 0)
+                    if (neighbours[j] == null  || !neighbours[j].walkable/* || staticObstacleCostField[neighbours[j].gridX, neighbours[j].gridY] != 0*/)
                     {
                         continue;
                     }
@@ -273,14 +283,14 @@ public class CostFieldGenerator : MonoBehaviour
                     //then square the distance
                     distBetweenObjects = distBetweenObjects * distBetweenObjects;
                     //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
-                    double force = GravitationalConstant * ((staticFieldMass * AgentMass) / distBetweenObjects);
+                    float force = GravitationalConstant * ((staticFieldMass * AgentMass) / distBetweenObjects);
 
                     //if the negative force is greater than the already stored negative force, then update it
                     if(-force < staticObstacleCostField[neighbours[j].gridX,neighbours[j].gridY])
                     {
                             staticObstacleCostField[neighbours[j].gridX, neighbours[j].gridY] = -force;
+                            openSet.Add(neighbours[j]);
                     }
-                         openSet.Add(neighbours[j]);
                 }
                 openSet.Remove(nodeToCheck);
                 nodeToCheck.searched = true;
