@@ -16,13 +16,7 @@ public class Grid : MonoBehaviour {
     [HideInInspector]
     public Node[,] grid;
 
-    //colours to represent each grid square
     [Space]
-    [SerializeField]
-    private Color WalkableGridColor;
-    [SerializeField]
-    private Color UnwalkableGridColor;
-
     private float nodeDiameter;
     [HideInInspector]
     public int gridSizeX;//size of the grid arrays x dimension
@@ -32,9 +26,16 @@ public class Grid : MonoBehaviour {
     public int maxSize;//the grids x size multiplied by the y
 
     [Space]
+    private bool showGoalNode = true;
     [SerializeField]
     private bool useAstarNode;
-
+    //colours to represent each grid square
+    [Space]
+    [SerializeField]
+    private Color WalkableGridColor;
+    [SerializeField]
+    private Color UnwalkableGridColor;
+   
     private void Awake()
     {
         nodeDiameter = nodeRadius * 2;
@@ -83,8 +84,8 @@ public class Grid : MonoBehaviour {
         percentY = Mathf.Clamp01(percentY);
 
         //because arrays are zero indexed, we subtract 1 from the size of the grid
-        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
-        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+        int x = Mathf.RoundToInt((gridSizeX) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY) * percentY);
 
         //then we return the grid coordinate that we need 
         return grid[x, y];
@@ -162,7 +163,7 @@ public class Grid : MonoBehaviour {
                     }
                     Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0,1) * (nodeDiameter - .1f));
                 }
-                if(node.startNode)
+                if(node.goalNode && showGoalNode)
                 {
                     Gizmos.color = Color.green;
                     Gizmos.DrawSphere(node.WorldPosition, nodeRadius);
@@ -178,11 +179,11 @@ public class Grid : MonoBehaviour {
     //for UI interfacing purposes
     public void ShowHeatMap(bool show)
     {
-        if (show)
-            DrawGcost = true;
-        else
-            DrawGcost = false;
+        DrawGcost = show;
+    }
+    public void ShowGoalNode(bool show)
+    {
+        showGoalNode = show;
     }
 
 }
-

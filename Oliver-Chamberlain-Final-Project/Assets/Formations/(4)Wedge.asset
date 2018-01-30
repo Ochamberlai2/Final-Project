@@ -11,13 +11,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68ad5af695d4b941bcbcf81ab6723ce, type: 3}
   m_Name: (4)Wedge
   m_EditorClassIdentifier: 
-  NumOfAgents: 4
+  NumOfAgents: 6
   FormationLayout:
     rows:
-    - Column: 00000000
-    - Column: 00000000
-    - Column: 01000001
-    - Column: 00010100
-    NumAgents: 4
+    - Column: 000000000000
+    - Column: 000000000000
+    - Column: 000000000000
+    - Column: 010000000001
+    - Column: 000100000100
+    - Column: 000001010000
+    NumAgents: 6
   DistBetweenColumns: 2
   DistBetweenRows: 2

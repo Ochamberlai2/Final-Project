@@ -8,7 +8,7 @@ public class Node
 
     //for debugging only
     public bool searched;
-    public bool startNode;
+    public bool goalNode;
     //for debugging only
 
 

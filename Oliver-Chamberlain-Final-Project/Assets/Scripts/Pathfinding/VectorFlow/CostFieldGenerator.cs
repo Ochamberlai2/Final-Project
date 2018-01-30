@@ -7,11 +7,12 @@ public class CostFieldGenerator : MonoBehaviour
 {
 
     Grid grid;
-
+    [HideInInspector]
     public Vector3 targetPos;
 
     #region field variables
     public float[,] goalCostField;//represents the gravitational force of each grid tile in relation to the goal node
+    [Header("Potential field strength variables")]
     public float goalFieldMass;
 
     public float[,] staticObstacleCostField;//represents the gravitational force of each grid tile in relation to the closest obstacle node
@@ -20,11 +21,11 @@ public class CostFieldGenerator : MonoBehaviour
     private float staticFieldInfluence;
 
     public int[,] manhattanDistanceFromGoal;//this will be used as a tiebreaker in the event of local minima
-
-    private const float AgentMass = 1.5f;
+    [SerializeField]
+    public float AgentMass = 1.5f;
     
-    //in order to generate any real level of gravitational force, I have multiplied the gravitational constant by many magnitudes
-    private const float GravitationalConstant = 6.67408f;
+
+    public const float agentPersonalFieldInfluence = 2;//the agent's personal field strength is -infinity
     #endregion
 
     #region UI bools
@@ -83,7 +84,7 @@ public class CostFieldGenerator : MonoBehaviour
                 flowFieldCostText[x, y].transform.SetParent(textMeshParent.transform);
                 flowFieldCostText[x, y].transform.localScale = Vector3.one / 2;
                 flowFieldCostText[x, y].gameObject.name = "(" + x + "," + y + ")";
-                flowFieldCostText[x, y].transform.position = new Vector3(grid.grid[x, y].WorldPosition.x - (grid.nodeRadius/2), grid.grid[x, y].WorldPosition.y , grid.grid[x, y].WorldPosition.z + (grid.nodeRadius/2));
+                flowFieldCostText[x, y].transform.position = new Vector3(grid.grid[x, y].WorldPosition.x - (grid.nodeRadius), grid.grid[x, y].WorldPosition.y , grid.grid[x, y].WorldPosition.z + (grid.nodeRadius/2));
                 flowFieldCostText[x, y].transform.Rotate(Vector3.right, 90);
 
             }
@@ -160,14 +161,14 @@ public class CostFieldGenerator : MonoBehaviour
         foreach (Node node in grid.grid)
         {
             goalCostField[node.gridX, node.gridY] = 0;
-            node.startNode = false;
+            node.goalNode = false;
         }
         //get the target node
         Node targetNode = grid.NodeFromWorldPoint(target);
         ////////////////////////////////
         targetPos = targetNode.WorldPosition;
         ///////////////////////////////
-        targetNode.startNode = true;
+        targetNode.goalNode = true;
         //set the value of the target node.
         goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldMass;
         //the manhattan distance from the goal is always going to be 0 as it is the goal node
@@ -181,7 +182,7 @@ public class CostFieldGenerator : MonoBehaviour
             Node toCheck = activeSet[0];
             //loop through the neighbour list of the front node of the active set
             //get only the orthogonal neighbours
-            Node[] neighbourArr = grid.GetOrthogonalNeighbours(toCheck);
+            Node[] neighbourArr = grid.GetNeighbours(toCheck).ToArray();//grid.GetOrthogonalNeighbours(toCheck);
 
 
             for (int i = 0; i < neighbourArr.Length; i++)
@@ -198,20 +199,19 @@ public class CostFieldGenerator : MonoBehaviour
 
                 //set the manhattan distance value
                 manhattanDistanceFromGoal[neighbourArr[i].gridX, neighbourArr[i].gridY] = manhattanDistanceFromGoal[toCheck.gridX,toCheck.gridY] + 1;
-              
+
 
 
                 //generate r^2 for the below equation
-                float distBetweenObjects = (targetNode.WorldPosition - neighbourArr[i].WorldPosition).magnitude;
+                float distBetweenObjects = Vector3.Distance(targetNode.WorldPosition, neighbourArr[i].WorldPosition);
                 //then square it
                 distBetweenObjects = distBetweenObjects * distBetweenObjects;
 
                 //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
-                float force = GravitationalConstant * ((goalFieldMass * AgentMass) /distBetweenObjects);
+                float force = /*GravitationalConstant **/ ((goalFieldMass) /distBetweenObjects);
                 goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] = force;
                 activeSet.Add(neighbourArr[i]);
             }
-            toCheck.searched = true;
             activeSet.Remove(toCheck);
         }
     }
@@ -259,7 +259,7 @@ public class CostFieldGenerator : MonoBehaviour
       
         for (int i = 0; i < obstacleNodes.Count; i++)
         {
-            openSet.AddRange(grid.GetNeighbours(obstacleNodes[i]));///change the array accessor back to i when done debugging this function///
+            openSet.AddRange(grid.GetNeighbours(obstacleNodes[i]));
             while (openSet.Count > 0)
             {
 
@@ -270,20 +270,22 @@ public class CostFieldGenerator : MonoBehaviour
 
                 for (int j = 0; j < neighbours.Count; j++)
                 {
-                   //check that the entry is not null, is walkable and the grid node associated with it does not already have a value
-                    if (neighbours[j] == null  || !neighbours[j].walkable/* || staticObstacleCostField[neighbours[j].gridX, neighbours[j].gridY] != 0*/)
+                   //check that the entry is not null and is walkable 
+                    if (neighbours[j] == null  || !neighbours[j].walkable)
                     {
                         continue;
                     }
                     //generate r^2 for the below equation
                     float distBetweenObjects = Vector3.Distance(obstacleNodes[i].WorldPosition,neighbours[j].WorldPosition);
+                    float force = 0;
 
                     if (distBetweenObjects >= staticFieldInfluence)//this should stop the field from acting past a 2 node radius 
                         continue;
+
                     //then square the distance
                     distBetweenObjects = distBetweenObjects * distBetweenObjects;
-                    //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
-                    float force = GravitationalConstant * ((staticFieldMass * AgentMass) / distBetweenObjects);
+                    //the mass of the field divided by the squared distance between them
+                    force =staticFieldMass / distBetweenObjects;
 
                     //if the negative force is greater than the already stored negative force, then update it
                     if(-force < staticObstacleCostField[neighbours[j].gridX,neighbours[j].gridY])
@@ -293,7 +295,6 @@ public class CostFieldGenerator : MonoBehaviour
                     }
                 }
                 openSet.Remove(nodeToCheck);
-                nodeToCheck.searched = true;
 
 
 
@@ -301,6 +302,53 @@ public class CostFieldGenerator : MonoBehaviour
         }//end of for
     }//EOF
 
+    //this is an expensive function, can be optimised in the future by only generating potentials for points which are candidates
+    public float[,] GetAgentFieldsSummed(List<Node> agentPositions)
+    {
+        float[,] agentFields = new float[grid.gridSizeX, grid.gridSizeY];
+
+        List<Node> openSet = new List<Node>();
+
+        for(int i = 0; i  < agentPositions.Count; i++)
+        {
+            openSet.AddRange(grid.GetNeighbours(agentPositions[i]));
+            while(openSet.Count > 0)
+            {
+                Node nodeToCheck = openSet[0];//the node being evaluated is always the first in the open set
+                List<Node> neighbours = grid.GetNeighbours(nodeToCheck);
+
+                //loop through the neighbours of the checking node
+                for(int j = 0; j < neighbours.Count; j++)
+                {
+                    //if there is no neighbour or the neighbour is unwalkable, dont check it
+                    if(neighbours[j] == null||!neighbours[j].walkable)
+                    {
+                        continue;
+                    }
+                    //otherwise get the distance between the current agent and the node we are checking currently
+                    float distBetweenObjects = Vector3.Distance(agentPositions[i].WorldPosition, neighbours[j].WorldPosition);
+                    //if this node is outside of the desired field of influence, then ignore it
+                    if(distBetweenObjects > agentPersonalFieldInfluence)
+                    {
+                        continue;
+                    }
+                    //otherwise square the distance
+                    distBetweenObjects = distBetweenObjects * distBetweenObjects;
+                    //then figure out the mass of the field
+                    float force = AgentMass / distBetweenObjects;
+
+                    //if the force of the tile being assigned to is already greater than the one which would be applied, do not overwrite it.
+                    if(-force < agentFields[neighbours[j].gridX,neighbours[j].gridY])
+                    {
+                        agentFields[neighbours[j].gridX, neighbours[j].gridY] = -force;
+                        openSet.Add(neighbours[j]);
+                    }
+                }
+                openSet.Remove(nodeToCheck);
+            }
+        }
+        return agentFields;
+    }
 
     #region UI interfacing functions
     public void ShowStaticCostField(bool show)
