@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class AgentManager : MonoBehaviour {
 
-    public static List<FlowFieldAgent> agents;
+    public static List<PotentialFieldAgent> agents;
 
 
     public void Awake()
     {
-        agents = new List<FlowFieldAgent>();
+        agents = new List<PotentialFieldAgent>();
     }
 
 

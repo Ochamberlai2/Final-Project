@@ -135,6 +135,10 @@ public class Grid : MonoBehaviour {
        
         return neighbours;
     }
+    public bool ValidatePointOnGrid(int x, int y)
+    {
+        return (!(x > gridSizeX || x < 0 || y > gridSizeY || y < 0));
+    }
 
     private void OnDrawGizmos()
     {

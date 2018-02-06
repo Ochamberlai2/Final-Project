@@ -2,30 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlowFieldAgent : MonoBehaviour {
+public class PotentialFieldAgent : MonoBehaviour {
 
-
+    public bool leader; //whether or not the agent is the leader of the formation
+   
 
     [SerializeField]
     private float velocityMultiplier;
-
-    private Grid grid;
-    private Rigidbody rb;
-
-    private Vector3 desiredVelocity;
-
+    [SerializeField]
+    private int recentlyVisitedListSize = 4;
     [SerializeField]
     [Range(-10,0)]
     private int recentlyVisitedValueReduction = -1;
 
-    [SerializeField]
-    private int recentlyVisitedListSize = 4;
+    private AgentManager agentManager;
+    private Grid grid;
+    private Rigidbody rb;
+    private Vector3 desiredVelocity;
     private List<Node> recentlyVisitedNodes = new List<Node>();
-
     private List<Node> otherAgentNodes = new List<Node>();
 
-    private void Start()
+    public void Initialise()
     {
+        agentManager = FindObjectOfType<AgentManager>();
         rb = GetComponent<Rigidbody>();//assign the rigidbody
         grid = FindObjectOfType<Grid>();//assign the reference to the grid
         AgentManager.agents.Add(this);//add the agent to the list of agents in order to track position etc
@@ -36,13 +35,13 @@ public class FlowFieldAgent : MonoBehaviour {
     {
         while (true)
         {
-            desiredVelocity = FindNextNode();//get the desired directional vector
+            desiredVelocity = FindNextNode(CostFieldGenerator.Instance.goalCostField,CostFieldGenerator.Instance.staticObstacleCostField);//get the desired directional vector
             rb.velocity = new Vector3(desiredVelocity.x, 0, desiredVelocity.z) * velocityMultiplier;//then apply the direction with the velocity multiplier
             yield return new WaitForFixedUpdate();
         }
     }
     //returns a normalised vector pointing to the cheapest node
-    public Vector3 FindNextNode()
+    public Vector3 FindNextNode(params float[][,] potentialFields)
     {
         Node agentNode = grid.NodeFromWorldPoint(transform.position);
         Node[] neighbourList = grid.GetNeighbours(agentNode).ToArray();
@@ -129,6 +128,7 @@ public class FlowFieldAgent : MonoBehaviour {
         //if a best node cannot be returned, return no movement
         return Vector3.zero;
     }
+
 
     private void OnDrawGizmos()
     {

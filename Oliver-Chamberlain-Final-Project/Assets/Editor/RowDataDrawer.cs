@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEditor;
 
+//ref https://www.youtube.com/watch?v=mxqD1B2e4ME (referenced in blog post: )
+
 [CustomPropertyDrawer(typeof(RowData))]
 public class RowDataDrawer:  PropertyDrawer
 {
@@ -15,7 +17,7 @@ public class RowDataDrawer:  PropertyDrawer
         {
             data.arraySize = numAgents.intValue;
         }
-        for(int i = data.arraySize-1; i >= 0  ; i--)
+        for(int i = 0; i <= data.arraySize -1; i++)
         {
             SerializedProperty row = data.GetArrayElementAtIndex(i).FindPropertyRelative("Column");
             newPos.height = 18f;

@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 public class CostFieldGenerator : MonoBehaviour
 {
 
-    Grid grid;
     [HideInInspector]
     public Vector3 targetPos;
 
@@ -28,7 +27,9 @@ public class CostFieldGenerator : MonoBehaviour
     public const float agentPersonalFieldInfluence = 2;//the agent's personal field strength is -infinity
     #endregion
 
-    #region UI bools
+    Grid grid;
+    #region UI vars
+    public PotentialFieldSquad squadToShow;
     bool showStaticField;
     bool showGoalField;
 
@@ -114,6 +115,7 @@ public class CostFieldGenerator : MonoBehaviour
         }
     }
 
+    //sums all of the requested values and displays them 
     public void setTextMeshText()
     {
         if(!showGoalField && !showStaticField)
@@ -134,20 +136,22 @@ public class CostFieldGenerator : MonoBehaviour
                     flowFieldCostText[x, y].text = "-inf";
                     continue;
                 }
+                float valueToShow = 0f;
 
+                if(showGoalField)
+                {
+                    valueToShow += goalCostField[x, y];
+                }
+                if(showStaticField)
+                {
+                    valueToShow += staticObstacleCostField[x, y];
+                }
+                if(squadToShow != null)
+                {
+                    valueToShow += squadToShow.formationPotentialField[x, y];
+                }
 
-                if (showGoalField && showStaticField)
-                {
-                    flowFieldCostText[x, y].text = (goalCostField[x, y] + staticObstacleCostField[x, y]).ToString("F2");
-                }
-                else if (showGoalField && !showStaticField)
-                {
-                    flowFieldCostText[x, y].text = goalCostField[x, y].ToString("F2");
-                }
-                else if(!showGoalField && showStaticField)
-                {
-                    flowFieldCostText[x, y].text =  staticObstacleCostField[x, y].ToString("F2");
-                }
+                flowFieldCostText[x, y].text = valueToShow.ToString("F2");    
             }
         }
     }
@@ -302,6 +306,50 @@ public class CostFieldGenerator : MonoBehaviour
         }//end of for
     }//EOF
 
+    
+
+    public void GenerateFormationField(ref float[,] formationField,Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength)
+    {
+        //get the nodes to generate a field around
+        List<Node> formationNodes = GetFormationNodes(leaderNode, pointsInRelationToLeaderNode);
+        List<Node> openSet = new List<Node>();
+        //add all neighbours of these nodes to the open set to begin with
+        for (int i = 0; i < formationNodes.Count; i++)
+        {
+            openSet.Add(formationNodes[i]);
+            while (openSet.Count > 0)
+            {
+                //remove the first node from the open set
+                Node nodeToCheck = openSet[0];
+                //then get the neighbours of this node
+                List<Node> checkingNodeNeighbours = grid.GetNeighbours(nodeToCheck);
+
+                //and loop through them to generate values for each of them
+                for (int j = 0; j < checkingNodeNeighbours.Count; j++)
+                {
+                    if (checkingNodeNeighbours[j] == null || !checkingNodeNeighbours[j].walkable)
+                        continue;
+
+                    //generate r^2 for the below equation
+                    float distBetweenObjects = Vector3.Distance(formationNodes[i].WorldPosition, checkingNodeNeighbours[j].WorldPosition);
+                    distBetweenObjects = distBetweenObjects * distBetweenObjects;
+
+                    //the strength of the field divided by the squared distance between them
+                    float force = fieldStrength / distBetweenObjects;
+
+                    //FIRST EXPERIMENT
+                    //summing the strength of all of the points of interest together
+                    formationField[checkingNodeNeighbours[j].gridX, checkingNodeNeighbours[j].gridY] += force;
+                    openSet.Add(checkingNodeNeighbours[j]);
+
+                }
+                    openSet.Remove(nodeToCheck);
+            }
+            
+        }
+
+    } 
+
     //this is an expensive function, can be optimised in the future by only generating potentials for points which are candidates
     public float[,] GetAgentFieldsSummed(List<Node> agentPositions)
     {
@@ -350,6 +398,21 @@ public class CostFieldGenerator : MonoBehaviour
         return agentFields;
     }
 
+    private List<Node> GetFormationNodes(Node leaderNode, List<Vector2> pointsInRelationToLeaderNode)
+    {
+        List<Node> returnList = new List<Node>();
+
+        foreach(Vector2 offset in pointsInRelationToLeaderNode)
+        {
+            if(grid.ValidatePointOnGrid((int)offset.x + leaderNode.gridX,(int)offset.y + leaderNode.gridY))
+            {
+                Node referencedNode = grid.grid[leaderNode.gridX + (int)offset.x, leaderNode.gridY + (int)offset.y];
+                returnList.Add(referencedNode);
+            }
+        }
+        return returnList;
+
+    }
     #region UI interfacing functions
     public void ShowStaticCostField(bool show)
     {
