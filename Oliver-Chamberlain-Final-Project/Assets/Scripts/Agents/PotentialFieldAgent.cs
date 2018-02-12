@@ -6,9 +6,11 @@ public class PotentialFieldAgent : MonoBehaviour {
 
     public bool leader; //whether or not the agent is the leader of the formation
    
+    public Rigidbody rb;
+    public Vector3 desiredVelocity;
+    public float velocityMultiplier;
 
-    [SerializeField]
-    private float velocityMultiplier;
+    
     [SerializeField]
     private int recentlyVisitedListSize = 4;
     [SerializeField]
@@ -17,8 +19,6 @@ public class PotentialFieldAgent : MonoBehaviour {
 
     private AgentManager agentManager;
     private Grid grid;
-    private Rigidbody rb;
-    private Vector3 desiredVelocity;
     private List<Node> recentlyVisitedNodes = new List<Node>();
     private List<Node> otherAgentNodes = new List<Node>();
 
@@ -28,20 +28,20 @@ public class PotentialFieldAgent : MonoBehaviour {
         rb = GetComponent<Rigidbody>();//assign the rigidbody
         grid = FindObjectOfType<Grid>();//assign the reference to the grid
         AgentManager.agents.Add(this);//add the agent to the list of agents in order to track position etc
-        StartCoroutine(Movement());//then start the movement coroutine.
+      
     }
-
-    private IEnumerator Movement()
+    /// <summary>
+    /// Finds the desired velocity and sets the agent's velocity
+    /// There is no need to include agent's personal fields as this is calculated and summed seperately
+    /// </summary>
+    /// <param name="potentialFields">All potential fields to be summed</param>
+    public void Movement(params float [][,] potentialFields)
     {
-        while (true)
-        {
-            desiredVelocity = FindNextNode(CostFieldGenerator.Instance.goalCostField,CostFieldGenerator.Instance.staticObstacleCostField);//get the desired directional vector
-            rb.velocity = new Vector3(desiredVelocity.x, 0, desiredVelocity.z) * velocityMultiplier;//then apply the direction with the velocity multiplier
-            yield return new WaitForFixedUpdate();
-        }
+        desiredVelocity = FindNextNode(potentialFields);//get the desired directional vector
+        rb.velocity = new Vector3(desiredVelocity.x, 0, desiredVelocity.z) * velocityMultiplier;//then apply the direction with the velocity multiplier
     }
     //returns a normalised vector pointing to the cheapest node
-    public Vector3 FindNextNode(params float[][,] potentialFields)
+    private Vector3 FindNextNode(params float[][,] potentialFields)
     {
         Node agentNode = grid.NodeFromWorldPoint(transform.position);
         Node[] neighbourList = grid.GetNeighbours(agentNode).ToArray();
@@ -68,9 +68,11 @@ public class PotentialFieldAgent : MonoBehaviour {
                 continue;
 
             //get the value attributed to the node based upon the relevant fields
-            float neighbourValue = CostFieldGenerator.Instance.goalCostField[neighbourList[i].gridX, neighbourList[i].gridY] + 
-                CostFieldGenerator.Instance.staticObstacleCostField[neighbourList[i].gridX, neighbourList[i].gridY] + 
-                agentFieldsSummed[neighbourList[i].gridX, neighbourList[i].gridY];
+            float neighbourValue =agentFieldsSummed[neighbourList[i].gridX, neighbourList[i].gridY];
+            for (int j = 0; j < potentialFields.Length; j++)
+            {
+                neighbourValue += potentialFields[j][neighbourList[i].gridX, neighbourList[i].gridY];
+            }
 
             //if the node already houses another agent, under no circumstances does the agent want to move onto it as this would cause a collision
             if(otherAgentNodes.Contains(grid.grid[neighbourList[i].gridX,neighbourList[i].gridY]))

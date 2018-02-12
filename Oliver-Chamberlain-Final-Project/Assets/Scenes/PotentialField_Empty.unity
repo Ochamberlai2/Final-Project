@@ -234,6 +234,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: 0
+  rb: {fileID: 0}
+  desiredVelocity: {x: 0, y: 0, z: 0}
   velocityMultiplier: 2
   recentlyVisitedListSize: 4
   recentlyVisitedValueReduction: -1
@@ -1736,6 +1738,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: 0
+  rb: {fileID: 0}
+  desiredVelocity: {x: 0, y: 0, z: 0}
   velocityMultiplier: 2
   recentlyVisitedListSize: 4
   recentlyVisitedValueReduction: -1
@@ -2166,6 +2170,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: 0
+  rb: {fileID: 0}
+  desiredVelocity: {x: 0, y: 0, z: 0}
   velocityMultiplier: 2
   recentlyVisitedListSize: 4
   recentlyVisitedValueReduction: -1
@@ -2614,6 +2620,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: 0
+  rb: {fileID: 0}
+  desiredVelocity: {x: 0, y: 0, z: 0}
   velocityMultiplier: 2
   recentlyVisitedListSize: 4
   recentlyVisitedValueReduction: -1
@@ -3027,6 +3035,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: 0
+  rb: {fileID: 0}
+  desiredVelocity: {x: 0, y: 0, z: 0}
   velocityMultiplier: 2
   recentlyVisitedListSize: 4
   recentlyVisitedValueReduction: -1
@@ -3232,7 +3242,7 @@ MonoBehaviour:
   squadLeader: {fileID: 0}
   leaderPositionInFormation: {x: 0, y: 0}
   currentFormation: {fileID: 11400000, guid: c3a551d6dc29da84eb72284d6028e138, type: 2}
-  formationFieldStrength: 0
+  formationFieldStrength: 240
 --- !u!4 &2085008146
 Transform:
   m_ObjectHideFlags: 0

@@ -109,16 +109,16 @@ public class CostFieldGenerator : MonoBehaviour
                 if(grid.grid[clickedNode.gridX,clickedNode.gridY].walkable)
                 {
                     GenerateGoalField(rayhit.point);
-                    setTextMeshText();
                 }
             }
         }
+        setTextMeshText();
     }
 
     //sums all of the requested values and displays them 
     public void setTextMeshText()
     {
-        if(!showGoalField && !showStaticField)
+        if(!showGoalField && !showStaticField && squadToShow == null)
         {
             textMeshParent.SetActive(false);
         }
@@ -306,46 +306,50 @@ public class CostFieldGenerator : MonoBehaviour
         }//end of for
     }//EOF
 
-    
-
     public void GenerateFormationField(ref float[,] formationField,Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength)
     {
         //get the nodes to generate a field around
-        List<Node> formationNodes = GetFormationNodes(leaderNode, pointsInRelationToLeaderNode);
-        List<Node> openSet = new List<Node>();
+        Node[] formationNodes = GetFormationNodes(leaderNode, pointsInRelationToLeaderNode).ToArray();
+        Queue<Node> openSet = new Queue<Node>();
+        List<Node> closedSet = new List<Node>();
         //add all neighbours of these nodes to the open set to begin with
-        for (int i = 0; i < formationNodes.Count; i++)
+        for (int i = 0; i < formationNodes.Length; i++)
         {
-            openSet.Add(formationNodes[i]);
-            while (openSet.Count > 0)
+            formationField[formationNodes[i].gridX, formationNodes[i].gridY] = fieldStrength;
+            openSet.Enqueue(formationNodes[i]);
+        }
+        while (openSet.Count > 0)
+        {
+            //remove the first node from the open set
+            Node nodeToCheck = openSet.Dequeue();
+            //then get the neighbours of this node
+            List<Node> checkingNodeNeighbours = grid.GetNeighbours(nodeToCheck);
+
+            //and loop through them to generate values for each of them
+            for (int j = 0; j < checkingNodeNeighbours.Count; j++)
             {
-                //remove the first node from the open set
-                Node nodeToCheck = openSet[0];
-                //then get the neighbours of this node
-                List<Node> checkingNodeNeighbours = grid.GetNeighbours(nodeToCheck);
-
-                //and loop through them to generate values for each of them
-                for (int j = 0; j < checkingNodeNeighbours.Count; j++)
+                //check if the node is null, is in the closed set or if it is unwalkable
+                if (checkingNodeNeighbours[j] == null || closedSet.Contains(nodeToCheck) || !checkingNodeNeighbours[j].walkable)
+                    continue;
+                else
                 {
-                    if (checkingNodeNeighbours[j] == null || !checkingNodeNeighbours[j].walkable)
-                        continue;
-
                     //generate r^2 for the below equation
-                    float distBetweenObjects = Vector3.Distance(formationNodes[i].WorldPosition, checkingNodeNeighbours[j].WorldPosition);
+                    float distBetweenObjects = FindDistanceToClosestFormationPosition(checkingNodeNeighbours[j].WorldPosition,formationNodes);
                     distBetweenObjects = distBetweenObjects * distBetweenObjects;
 
+                    
                     //the strength of the field divided by the squared distance between them
                     float force = fieldStrength / distBetweenObjects;
 
-                    //FIRST EXPERIMENT
-                    //summing the strength of all of the points of interest together
-                    formationField[checkingNodeNeighbours[j].gridX, checkingNodeNeighbours[j].gridY] += force;
-                    openSet.Add(checkingNodeNeighbours[j]);
 
+                    if (force > formationField[checkingNodeNeighbours[j].gridX, checkingNodeNeighbours[j].gridY])
+                    {
+                        formationField[checkingNodeNeighbours[j].gridX, checkingNodeNeighbours[j].gridY] = force;
+                        openSet.Enqueue(checkingNodeNeighbours[j]);
+                    }
                 }
-                    openSet.Remove(nodeToCheck);
             }
-            
+            closedSet.Add(nodeToCheck);
         }
 
     } 
@@ -412,6 +416,30 @@ public class CostFieldGenerator : MonoBehaviour
         }
         return returnList;
 
+    }
+
+    private float FindDistanceToClosestFormationPosition(Vector3 checkingNodePos,Node[] formationNodes)
+    {
+
+        float[] nodeDistances = new float[formationNodes.Length];
+        //loop through and get the distance from the checking node to each of the formation nodes
+        for(int i = 0; i < nodeDistances.Length; i++)
+        {
+            nodeDistances[i] = Vector3.Distance(checkingNodePos, formationNodes[i].WorldPosition);
+        }
+        float lowestDist = float.MaxValue;
+        //then search for the lowest distance
+        for(int j = 0; j < nodeDistances.Length; j++)
+        {
+            if(nodeDistances[j] < lowestDist)
+            {
+                lowestDist = nodeDistances[j];
+            }
+        }
+        if (lowestDist == float.MaxValue)
+            Debug.LogError("closest formation node is not found");
+
+        return lowestDist;
     }
     #region UI interfacing functions
     public void ShowStaticCostField(bool show)

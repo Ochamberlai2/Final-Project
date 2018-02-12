@@ -22,11 +22,12 @@ public class PotentialFieldSquad : MonoBehaviour {
     private bool showSquadField;
     [SerializeField]
     private float formationFieldStrength;
+    private Grid grid;
 
     public void Start()
     {
 
-        Grid grid = FindObjectOfType<Grid>();
+        grid = FindObjectOfType<Grid>();
         formationPotentialField = new float[grid.gridSizeX,grid.gridSizeY];
         try
         {
@@ -50,6 +51,33 @@ public class PotentialFieldSquad : MonoBehaviour {
         catch
         {
             Debug.LogError("No formation selected");
+        }
+        StartCoroutine(SquadMovement());
+    }
+
+
+    private IEnumerator SquadMovement()
+    {
+        while (true)
+        {
+            CostFieldGenerator.Instance.GenerateFormationField(ref formationPotentialField, grid.NodeFromWorldPoint(squadLeader.transform.position), formationPointsInRelationToLeader, formationFieldStrength);
+            //loop through all squad and call their movement functions
+            for(int i = 0; i < squadAgents.Count; i++)
+            {
+
+                if (squadAgents[i] == squadLeader)
+                {
+                    //leader code
+                    squadAgents[i].Movement(CostFieldGenerator.Instance.staticObstacleCostField, CostFieldGenerator.Instance.goalCostField);
+                    yield return new WaitForFixedUpdate();
+                }
+                else
+                {
+                  // follower code
+                 squadAgents[i].Movement(CostFieldGenerator.Instance.staticObstacleCostField, formationPotentialField);
+                    yield return new WaitForFixedUpdate();
+                }
+            }
         }
     }
 
