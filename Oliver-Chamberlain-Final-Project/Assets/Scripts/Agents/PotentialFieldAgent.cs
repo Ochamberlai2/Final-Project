@@ -44,7 +44,8 @@ public class PotentialFieldAgent : MonoBehaviour {
     private Vector3 FindNextNode(params float[][,] potentialFields)
     {
         Node agentNode = grid.NodeFromWorldPoint(transform.position);
-        Node[] neighbourList = grid.GetNeighbours(agentNode).ToArray();
+        List<Node> neighbourList = grid.GetNeighbours(agentNode);
+        neighbourList.Add(agentNode);
         float[,] agentFieldsSummed = CostFieldGenerator.Instance.GetAgentFieldsSummed(otherAgentNodes);
         Node bestNode = null;
         float bestCost = 0;
@@ -61,7 +62,7 @@ public class PotentialFieldAgent : MonoBehaviour {
             otherAgentNodes.Add(grid.NodeFromWorldPoint(AgentManager.agents[j].transform.position));
         }
         //loop through the neighbours of the node the agent is positioned upon
-        for (int i = 0; i < neighbourList.Length; i++)
+        for (int i = 0; i < neighbourList.Count; i++)
         {
             //if the node is non walkable or null, ignore it
             if (!neighbourList[i].walkable || neighbourList[i] == null)

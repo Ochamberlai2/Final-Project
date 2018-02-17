@@ -15,6 +15,8 @@ public class PotentialFieldSquad : MonoBehaviour {
     public PotentialFieldAgent squadLeader;
     public Vector2 leaderPositionInFormation;
 
+    public float formationFieldUpdateInterval = 0.25f;
+
     public Formation currentFormation;
 
     public float[,] formationPotentialField;
@@ -52,15 +54,17 @@ public class PotentialFieldSquad : MonoBehaviour {
         {
             Debug.LogError("No formation selected");
         }
+        //start movement coroutines
+        StartCoroutine(UpdateSquadField(formationFieldUpdateInterval));
         StartCoroutine(SquadMovement());
     }
 
-
+    //calls the movement function for each agent in the squad, every fixed update cycle
     private IEnumerator SquadMovement()
     {
         while (true)
         {
-            CostFieldGenerator.Instance.GenerateFormationField(ref formationPotentialField, grid.NodeFromWorldPoint(squadLeader.transform.position), formationPointsInRelationToLeader, formationFieldStrength);
+           
             //loop through all squad and call their movement functions
             for(int i = 0; i < squadAgents.Count; i++)
             {
@@ -73,12 +77,29 @@ public class PotentialFieldSquad : MonoBehaviour {
                 }
                 else
                 {
-                  // follower code
-                 squadAgents[i].Movement(CostFieldGenerator.Instance.staticObstacleCostField, formationPotentialField);
+                    // follower code
+                    squadAgents[i].Movement(CostFieldGenerator.Instance.staticObstacleCostField, formationPotentialField);
                     yield return new WaitForFixedUpdate();
                 }
             }
+            
         }
+    }
+    //updates the formation field every x seconds
+    private IEnumerator UpdateSquadField(float interval)
+    {
+        while(true)
+        {
+           CostFieldGenerator.Instance.GenerateFormationField(grid.NodeFromWorldPoint(squadLeader.transform.position), formationPointsInRelationToLeader, formationFieldStrength, SetSquadField);
+            yield return new WaitForSeconds(interval);
+        }
+        
+    }
+
+    //callback function from CostFieldGenerator.GenerateFormationField
+    private void SetSquadField(float[,] potentialField)
+    {
+        formationPotentialField = potentialField;
     }
 
     public void FindLeaderPositionInFormation()

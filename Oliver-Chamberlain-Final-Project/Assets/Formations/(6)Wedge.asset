@@ -14,8 +14,8 @@ MonoBehaviour:
   NumOfAgents: 6
   FormationLayout:
     rows:
-    - Column: 000001010100
-    - Column: 000100000000
+    - Column: 000001010000
+    - Column: 000100000100
     - Column: 010000000001
     - Column: 000000000000
     - Column: 000000000000
