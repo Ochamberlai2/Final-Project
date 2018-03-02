@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PotentialFieldAgent : MonoBehaviour {
 
     public bool leader; //whether or not the agent is the leader of the formation
    
     public Rigidbody rb;
     public Vector3 desiredVelocity;
-    public float velocityMultiplier;
+    public float velocityMultiplier = 2f;
 
     
     [SerializeField]
@@ -40,6 +41,7 @@ public class PotentialFieldAgent : MonoBehaviour {
         desiredVelocity = FindNextNode(potentialFields);//get the desired directional vector
         rb.velocity = new Vector3(desiredVelocity.x, 0, desiredVelocity.z) * velocityMultiplier;//then apply the direction with the velocity multiplier
     }
+
     //returns a normalised vector pointing to the cheapest node
     private Vector3 FindNextNode(params float[][,] potentialFields)
     {

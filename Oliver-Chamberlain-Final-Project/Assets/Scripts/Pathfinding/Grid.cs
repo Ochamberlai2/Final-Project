@@ -60,16 +60,7 @@ public class Grid : MonoBehaviour {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, UnwalkableLayer));
 
-
-                //we use different derivatives of the node class depending on whether we will be running A* or potential field pathfinding
-                if(useAstarNode)
-                {
-                    grid[x, y] = new AstarNode(worldPoint, new Vector2(x, y), walkable);
-                }
-                else
-                {
-                    grid[x, y] = new PFNode(worldPoint, new Vector2(x, y), walkable);
-                }
+                grid[x, y] = new Node(worldPoint, new Vector2(x, y), walkable);
 
             }
         }
