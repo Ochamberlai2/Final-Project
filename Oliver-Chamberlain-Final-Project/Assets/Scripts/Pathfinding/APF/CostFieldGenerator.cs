@@ -24,7 +24,6 @@ public class CostFieldGenerator : MonoBehaviour
     [SerializeField]
     private float staticFieldInfluence;
 
-    public int[,] manhattanDistanceFromGoal;//this will be used as a tiebreaker in the event of local minima
     [SerializeField]
     public float AgentMass = 1.5f;
     
@@ -75,7 +74,6 @@ public class CostFieldGenerator : MonoBehaviour
         goalCostField = new float[grid.gridSizeX, grid.gridSizeY];
         staticObstacleCostField = new float[grid.gridSizeX, grid.gridSizeY];
         zeroField = new float[grid.gridSizeX, grid.gridSizeY];
-        manhattanDistanceFromGoal = new int[grid.gridSizeX, grid.gridSizeY];
         flowFieldCostText = new TextMesh[grid.gridSizeX, grid.gridSizeY];
         textMeshParent = GameObject.Find("TextMeshes");
 
@@ -160,8 +158,7 @@ public class CostFieldGenerator : MonoBehaviour
     }
 
 
-    //for the flow field algorithm, we are looking for path distance, so when we are flood filling, we are just looking to fill 
-    //in the number of path steps it takes from every node in the grid to reach the goal.
+
     public void GenerateGoalField(Vector3 target)
     {
         List<Node> activeSet = new List<Node>();
@@ -178,8 +175,7 @@ public class CostFieldGenerator : MonoBehaviour
         targetNode.goalNode = true;
         //set the value of the target node.
         goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldMass;
-        //the manhattan distance from the goal is always going to be 0 as it is the goal node
-        manhattanDistanceFromGoal[targetNode.gridX, targetNode.gridY] = 0;
+ 
         //and add it to the active set
         activeSet.Add(targetNode);
 
@@ -204,15 +200,10 @@ public class CostFieldGenerator : MonoBehaviour
                 if (neighbourArr[i] == null || goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] != 0 || neighbourArr[i] == targetNode || !neighbourArr[i].walkable)
                     continue;
 
-                //set the manhattan distance value
-                manhattanDistanceFromGoal[neighbourArr[i].gridX, neighbourArr[i].gridY] = manhattanDistanceFromGoal[toCheck.gridX,toCheck.gridY] + 1;
-
-
-
                 //generate r^2 for the below equation
                 float distBetweenObjects = Vector3.Distance(targetNode.WorldPosition, neighbourArr[i].WorldPosition);
                 //then square it
-                distBetweenObjects = distBetweenObjects * distBetweenObjects;
+                //distBetweenObjects = distBetweenObjects * distBetweenObjects;
 
                 //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
                 float force = /*GravitationalConstant **/ ((goalFieldMass) /distBetweenObjects);
@@ -290,7 +281,7 @@ public class CostFieldGenerator : MonoBehaviour
                         continue;
 
                     //then square the distance
-                    distBetweenObjects = distBetweenObjects * distBetweenObjects;
+                    //distBetweenObjects = distBetweenObjects * distBetweenObjects;
                     //the mass of the field divided by the squared distance between them
                     force =staticFieldMass / distBetweenObjects;
 
@@ -334,7 +325,7 @@ public class CostFieldGenerator : MonoBehaviour
 
             //generate r^2 for the below equation
             float distBetweenObjects = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
-            distBetweenObjects = distBetweenObjects * distBetweenObjects;
+            //distBetweenObjects = distBetweenObjects * distBetweenObjects;
 
             //f = mass / r^2
             float force = fieldStrength / distBetweenObjects;
@@ -342,49 +333,12 @@ public class CostFieldGenerator : MonoBehaviour
             formationField[gridX, gridY] = force;
 
         }
-        #region while loop version
-        /* while (openSet.Count > 0)
-         {
-             //remove the first node from the open set
-             Node nodeToCheck = openSet.Dequeue();
-             //then get the neighbours of this node
-             List<Node> checkingNodeNeighbours = grid.GetNeighbours(nodeToCheck);
-
-             //and loop through them to generate values for each of them
-             for (int j = 0; j < checkingNodeNeighbours.Count; j++)
-             {
-                 //check if the node is null, is in the closed set or if it is unwalkable
-                 if (checkingNodeNeighbours[j] == null || closedSet.Contains(nodeToCheck) || !checkingNodeNeighbours[j].walkable)
-                     continue;
-                 else
-                 {
-
-                     //generate r^2 for the below equation
-                     float distBetweenObjects = FindDistanceToClosestFormationPosition(checkingNodeNeighbours[j].WorldPosition,formationNodes);
-
-                     //distBetweenObjects = distBetweenObjects * distBetweenObjects;
-
-
-                     //the strength of the field divided by the squared distance between them
-                     float force = fieldStrength / distBetweenObjects;
-
-
-                     if (force > formationField[checkingNodeNeighbours[j].gridX, checkingNodeNeighbours[j].gridY])
-                     {
-                         formationField[checkingNodeNeighbours[j].gridX, checkingNodeNeighbours[j].gridY] = force;
-                         openSet.Enqueue(checkingNodeNeighbours[j]);
-                     }
-                 }
-             }
-             closedSet.Add(nodeToCheck);
-         }*/
-        #endregion
         result(formationField);
     } 
 
     //this is an expensive function, can be optimised in the future by only generating potentials for points which are candidates
     public float[,] GetAgentFieldsSummed(List<Node> agentPositions)
-    {
+    {   
         float[,] agentFields = new float[grid.gridSizeX, grid.gridSizeY];
 
         List<Node> openSet = new List<Node>();
@@ -413,7 +367,7 @@ public class CostFieldGenerator : MonoBehaviour
                         continue;
                     }
                     //otherwise square the distance
-                    distBetweenObjects = distBetweenObjects * distBetweenObjects;
+                    //distBetweenObjects = distBetweenObjects * distBetweenObjects;
                     //then figure out the mass of the field
                     float force = AgentMass / distBetweenObjects;
 
@@ -464,8 +418,13 @@ public class CostFieldGenerator : MonoBehaviour
                 lowestDist = nodeDistances[j];
             }
         }
+        //error check, if there are no formation nodes that means there is no formation
         if (lowestDist == float.MaxValue)
             UnityEngine.Debug.LogError("closest formation node is not found");
+
+        //if the lowest dist is 0 then return 1, because dividing by 0 yields a value of infinity
+        if (lowestDist == 0)
+            return 1;
 
         return lowestDist;
     }
