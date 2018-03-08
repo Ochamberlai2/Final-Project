@@ -3,34 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-//TODO 06/02/18:
-//move the calling of the movement function from each individual agent to this class
-
+public enum MovementDirection
+{
+    Down,
+    left,
+    Up,
+    Right,
+}
 
 public class PotentialFieldSquad : MonoBehaviour {
 
+    
 
     public List<PotentialFieldAgent> squadAgents;
-    public List<Vector2> formationPointsInRelationToLeader;
+
     public PotentialFieldAgent squadLeader;
     public Vector2 leaderPositionInFormation;
 
     public float formationFieldUpdateInterval = 0.25f;
 
+    /*
+     * formation info
+     */
     public Formation currentFormation;
 
+    [SerializeField]
+    private MovementDirection moveDir;
+
+
     public float[,] formationPotentialField;
+
+    private Dictionary<MovementDirection, List<Vector2>> formationDirections;
 
     private bool showSquadField;
     [SerializeField]
     private float formationFieldStrength;
     private Grid grid;
 
+
+
     public void Start()
     {
 
         grid = FindObjectOfType<Grid>();
         formationPotentialField = new float[grid.gridSizeX,grid.gridSizeY];
+        formationDirections = new Dictionary<MovementDirection, List<Vector2>>();
+
         try
         {
             foreach (PotentialFieldAgent agent in squadAgents)
@@ -47,8 +65,8 @@ public class PotentialFieldSquad : MonoBehaviour {
                     FindLeaderPositionInFormation();
                 }
             }
-                //then find all other positions in the formation in relation to the leader
-                FindFormationPointsInRelationToLeader();
+            //then find all other positions in the formation in relation to the leader
+            GetFormationRotations();
         }
         catch
         {
@@ -90,7 +108,7 @@ public class PotentialFieldSquad : MonoBehaviour {
     {
         while(true)
         {
-           CostFieldGenerator.Instance.GenerateFormationField(grid.NodeFromWorldPoint(squadLeader.transform.position), formationPointsInRelationToLeader, formationFieldStrength, SetSquadField);
+           CostFieldGenerator.Instance.GenerateFormationField(grid.NodeFromWorldPoint(squadLeader.transform.position), formationDirections[moveDir], formationFieldStrength, SetSquadField);
             yield return new WaitForSeconds(interval);
         }
         
@@ -101,6 +119,8 @@ public class PotentialFieldSquad : MonoBehaviour {
     {
         formationPotentialField = potentialField;
     }
+
+    #region formation matrix functions
 
     public void FindLeaderPositionInFormation()
     {
@@ -130,8 +150,27 @@ public class PotentialFieldSquad : MonoBehaviour {
         Debug.LogError(currentFormation.name + " is not a valid formation. No formation centre can be found");
     }
 
-    public void FindFormationPointsInRelationToLeader()
+    //initialises formation 
+    private void GetFormationRotations()
     {
+        //find the current formation's matrix
+        bool[,] formationMatrix = GetFormationMatrix(currentFormation);
+        formationDirections.Clear();
+        //add the down direction
+        formationDirections.Add(MovementDirection.Down, FindFormationPointsInRelationToLeader(formationMatrix));
+        //then add the other 3 directions
+        for(int i = 1; i < 5; i++)
+        {
+            RotateMatrix90(ref formationMatrix, currentFormation.NumOfAgents);
+            formationDirections.Add((MovementDirection)i, FindFormationPointsInRelationToLeader(formationMatrix));
+        }
+    }
+
+
+    public List<Vector2> FindFormationPointsInRelationToLeader(bool[,] formationMatrix)
+    {
+        List<Vector2> formationPointsInRelationToLeader = new List<Vector2>();
+
         //for the formation width
         for(int x = 0; x < currentFormation.FormationLayout.NumAgents; x++)
         {
@@ -139,18 +178,48 @@ public class PotentialFieldSquad : MonoBehaviour {
             for(int y = 0; y < currentFormation.FormationLayout.NumAgents;y++)
             {
                 //if the formation place is false, then an agent should not stand there
-                if(currentFormation.FormationLayout.rows[y].Column[x] == false || x == leaderPositionInFormation.x && y == leaderPositionInFormation.y)
-                {
+                if (formationMatrix[x, y] == false || x == leaderPositionInFormation.x && y == leaderPositionInFormation.y)
                     continue;
-                }
+
                 //otherwise, find the offset of the current row position from the leader's position
                 Vector2 offsetFromLeader = new Vector2(x, y) - leaderPositionInFormation;
 
                 formationPointsInRelationToLeader.Add(offsetFromLeader);
             }
         }
+        return formationPointsInRelationToLeader;
     }
 
+
+    //rotates the formation matrix 90 degrees
+    public void RotateMatrix90(ref bool[,] matrix, int matrixSize)
+    {
+        bool[,] newMat = new bool[matrixSize, matrixSize];
+
+        for(int i = 0; i < matrixSize; i++)
+        {
+            for(int j = 0; j < matrixSize; j++)
+            {
+                newMat[i, j] = matrix[matrixSize - j - 1, i];
+            }
+        }
+        matrix = newMat;
+    }
+
+    //gets the formation matrix from the argument
+    public bool[,] GetFormationMatrix(Formation formation)
+    {
+        bool[,] currentFormationMatrix = new bool[formation.NumOfAgents, formation.NumOfAgents];
+        for(int x = 0; x < formation.NumOfAgents; x++)
+        {
+            for(int y = 0; y < formation.NumOfAgents; y++)
+            {
+                currentFormationMatrix[x, y] = formation.FormationLayout.rows[y].Column[x];
+            }
+        }
+        return currentFormationMatrix;
+    }
+    #endregion
 
     #region UI interfacing 
     public void ShowSquadField(bool show)
