@@ -306,7 +306,7 @@ public class CostFieldGenerator : MonoBehaviour
         //get the nodes to generate a field around
         Node[] formationNodes = GetFormationNodes(leaderNode, pointsInRelationToLeaderNode).ToArray();
         Queue<Node> openSet = new Queue<Node>();
-        List<Node> closedSet = new List<Node>();
+
         //add all neighbours of these nodes to the open set to begin with
         for (int i = 0; i < formationNodes.Length; i++)
         {

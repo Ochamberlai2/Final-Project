@@ -18,7 +18,7 @@ public class PotentialFieldSquad : MonoBehaviour {
     public List<PotentialFieldAgent> squadAgents;
 
     public PotentialFieldAgent squadLeader;
-    public Vector2 leaderPositionInFormation;
+   // public Vector2 leaderPositionInFormation;
 
     public float formationFieldUpdateInterval = 0.25f;
 
@@ -35,7 +35,7 @@ public class PotentialFieldSquad : MonoBehaviour {
 
     private Dictionary<MovementDirection, List<Vector2>> formationDirections;
 
-    private bool showSquadField;
+
     [SerializeField]
     private float formationFieldStrength;
     private Grid grid;
@@ -61,8 +61,8 @@ public class PotentialFieldSquad : MonoBehaviour {
                 {
                     //set the squad leader
                     squadLeader = agent;
-                    //populate the leader positional vector
-                    FindLeaderPositionInFormation();
+             
+                 
                 }
             }
             //then find all other positions in the formation in relation to the leader
@@ -122,32 +122,97 @@ public class PotentialFieldSquad : MonoBehaviour {
 
     #region formation matrix functions
 
-    public void FindLeaderPositionInFormation()
+    public Vector2 FindLeaderPositionInFormation(MovementDirection movementDirection, bool[,] formationMatrix)
     {
         //the formation width or depth can only be as high as the number of agents in the formation
         int formationSize = currentFormation.NumOfAgents;
+        Vector2 leaderPositionInFormation = Vector2.zero;
+      
 
-        //find the closest point to the centre of the formation on the x axis
-        //find the closest point to the front of the formation on the y axis
-        for (int i = 0; i < formationSize; i++)
+
+
+
+
+
+        switch (movementDirection)
         {
-            //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
-            if (currentFormation.FormationLayout.rows[i].Column[(formationSize / 2) - 1] == true)
-            {
-                leaderPositionInFormation = new Vector2((formationSize / 2) - 1, i);
-                return;
-            }
-            //if the formation size is greater than one (ie, size/2 will not be out of bounds),
-            //then check to see if the centre rightmost column contains an agent, set this as the leaders position
-            else if (formationSize > 1 && currentFormation.FormationLayout.rows[i].Column[formationSize / 2] == true)
-            {
-                leaderPositionInFormation = new Vector2(formationSize / 2, i);
-                return;
-            }
+            case MovementDirection.Down:
+
+                for (int i = 0; i < formationSize; i++)
+                {
+                    //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
+                    if (formationMatrix[(formationSize / 2) - 1, i] == true)
+                    {
+                        leaderPositionInFormation = new Vector2((formationSize / 2) - 1, i);
+
+                    }
+                    //if the formation size is greater than one,
+                    //then check to see if the centre rightmost column contains an agent, set this as the leaders position
+                    else if (formationSize > 1 && formationMatrix[formationSize / 2, i] == true)
+                    {
+                        leaderPositionInFormation = new Vector2(formationSize / 2, i);
+                    }
+                }
+                break;
+
+            case MovementDirection.left:
+                for (int i = 0; i < formationSize; i++)
+                {
+                    //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
+                    if (formationMatrix[ i, (formationSize / 2) - 1] == true)
+                    {
+                        leaderPositionInFormation = new Vector2(i,(formationSize / 2) - 1);
+
+                    }
+                    //if the formation size is greater than one,
+                    //then check to see if the centre rightmost column contains an agent, set this as the leaders position
+                    else if (formationSize > 1 && formationMatrix[i,formationSize / 2] == true)
+                    {
+                        leaderPositionInFormation = new Vector2(i,formationSize / 2);
+                    }
+                }
+                break;
+            case MovementDirection.Up:
+
+                for (int i = formationSize-1; i >= 0; i--)
+                {
+                    //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
+                    if (formationMatrix[(formationSize / 2) - 1, i] == true)
+                    {
+                        leaderPositionInFormation = new Vector2((formationSize / 2) - 1, i);
+
+                    }
+                    //if the formation size is greater than one,
+                    //then check to see if the centre rightmost column contains an agent, set this as the leaders position
+                    else if (formationSize > 1 && formationMatrix[formationSize / 2, i] == true)
+                    {
+                        leaderPositionInFormation = new Vector2(formationSize / 2, i);
+                    }
+                }
+                break;
+            case MovementDirection.Right:
+                for (int i = formationSize - 1; i >= 0; i--)
+                {
+                    //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
+                    if (formationMatrix[i, (formationSize / 2) - 1] == true)
+                    {
+                        leaderPositionInFormation = new Vector2(i, (formationSize / 2) - 1);
+
+                    }
+                    //if the formation size is greater than one,
+                    //then check to see if the centre rightmost column contains an agent, set this as the leaders position
+                    else if (formationSize > 1 && formationMatrix[i, formationSize / 2] == true)
+                    {
+                        leaderPositionInFormation = new Vector2(i, formationSize / 2);
+                    }
+                }
+                break;
+            default:
+                break;
         }
 
-        //if there is no agent in the centremost columns log an error displaying that there is no valid formation
-        Debug.LogError(currentFormation.name + " is not a valid formation. No formation centre can be found");
+        
+        return leaderPositionInFormation;
     }
 
     //initialises formation 
@@ -157,19 +222,21 @@ public class PotentialFieldSquad : MonoBehaviour {
         bool[,] formationMatrix = GetFormationMatrix(currentFormation);
         formationDirections.Clear();
         //add the down direction
-        formationDirections.Add(MovementDirection.Down, FindFormationPointsInRelationToLeader(formationMatrix));
+        formationDirections.Add(MovementDirection.Down, FindFormationPointsInRelationToLeader(formationMatrix, MovementDirection.Down));
         //then add the other 3 directions
-        for(int i = 1; i < 5; i++)
+        for(int i = 1; i < 4; i++)
         {
             RotateMatrix90(ref formationMatrix, currentFormation.NumOfAgents);
-            formationDirections.Add((MovementDirection)i, FindFormationPointsInRelationToLeader(formationMatrix));
+            formationDirections.Add((MovementDirection)i, FindFormationPointsInRelationToLeader(formationMatrix,(MovementDirection)i));
         }
     }
 
 
-    public List<Vector2> FindFormationPointsInRelationToLeader(bool[,] formationMatrix)
+    public List<Vector2> FindFormationPointsInRelationToLeader(bool[,] formationMatrix, MovementDirection movementDirection)
     {
         List<Vector2> formationPointsInRelationToLeader = new List<Vector2>();
+        //get the leader's position in the formation
+        Vector2 leaderPosition = FindLeaderPositionInFormation(movementDirection,formationMatrix);
 
         //for the formation width
         for(int x = 0; x < currentFormation.FormationLayout.NumAgents; x++)
@@ -178,11 +245,11 @@ public class PotentialFieldSquad : MonoBehaviour {
             for(int y = 0; y < currentFormation.FormationLayout.NumAgents;y++)
             {
                 //if the formation place is false, then an agent should not stand there
-                if (formationMatrix[x, y] == false || x == leaderPositionInFormation.x && y == leaderPositionInFormation.y)
+                if (formationMatrix[x, y] == false || x == leaderPosition.x && y == leaderPosition.y)
                     continue;
 
                 //otherwise, find the offset of the current row position from the leader's position
-                Vector2 offsetFromLeader = new Vector2(x, y) - leaderPositionInFormation;
+                Vector2 offsetFromLeader = new Vector2(x, y) - leaderPosition;
 
                 formationPointsInRelationToLeader.Add(offsetFromLeader);
             }
@@ -232,7 +299,7 @@ public class PotentialFieldSquad : MonoBehaviour {
         {
             CostFieldGenerator.Instance.squadToShow = null;
         }
-        showSquadField = show;
+
     }
 
     #endregion

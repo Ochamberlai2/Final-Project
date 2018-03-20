@@ -11,21 +11,13 @@ public class PotentialFieldAgent : MonoBehaviour {
     public Vector3 desiredVelocity;
     public float velocityMultiplier = 2f;
 
-    
-    [SerializeField]
-    private int recentlyVisitedListSize = 4;
-    [SerializeField]
-    [Range(-10,0)]
-    private int recentlyVisitedValueReduction = -1;
-
-    private AgentManager agentManager;
     private Grid grid;
-    private List<Node> recentlyVisitedNodes = new List<Node>();
+
     private List<Node> otherAgentNodes = new List<Node>();
 
     public void Initialise()
     {
-        agentManager = FindObjectOfType<AgentManager>();
+
         rb = GetComponent<Rigidbody>();//assign the rigidbody
         grid = FindObjectOfType<Grid>();//assign the reference to the grid
         AgentManager.agents.Add(this);//add the agent to the list of agents in order to track position etc
@@ -77,17 +69,9 @@ public class PotentialFieldAgent : MonoBehaviour {
                 neighbourValue += potentialFields[j][neighbourList[i].gridX, neighbourList[i].gridY];
             }
 
-            //if the node already houses another agent, under no circumstances does the agent want to move onto it as this would cause a collision
-            if(otherAgentNodes.Contains(grid.grid[neighbourList[i].gridX,neighbourList[i].gridY]))
-            {
-                neighbourValue += float.MinValue;
-            }
-   
+
             //if the node being evaluated is the one most recently visited, reduce it's value
-            if(recentlyVisitedNodes.Contains(neighbourList[i]))
-            {
-                neighbourValue += recentlyVisitedValueReduction;
-            }
+         
             //if the sum of the relevant fields is more attractive than the currently most attractive node's value
             if (neighbourValue> bestCost)
             {
@@ -97,10 +81,6 @@ public class PotentialFieldAgent : MonoBehaviour {
                 bestCost = neighbourValue;
             }
           
-            else if(neighbourValue == bestCost && bestNode != null)
-            {
-               //attempt to escape local minima
-            }
             
         }
 
@@ -109,24 +89,7 @@ public class PotentialFieldAgent : MonoBehaviour {
 
             Vector3 newVelocity = (bestNode.WorldPosition - transform.position).normalized;
 
-            //TODO add the current node onto this also
-            /*
-            if (!recentlyVisitedNodes.Contains(bestNode))
-            {
-                //recently visited nodes is a rolling list, so if it is currently smaller than the desired size
-                //then the current next node can be added to it
-                if (recentlyVisitedNodes.Count < recentlyVisitedListSize)
-                {
-                    recentlyVisitedNodes.Add(bestNode);
-                }
-                // if the list is equal to the desired size, then the oldest node must be taken off of the list, in this case the front node.
-                else
-                {
-                    recentlyVisitedNodes.RemoveAt(0);
-                    recentlyVisitedNodes.Add(bestNode);
-                }
-            }
-            */
+         
             //return the normalized directional vector between the best node's position and the agents current node
             return newVelocity;
         }
@@ -139,7 +102,8 @@ public class PotentialFieldAgent : MonoBehaviour {
     {
         if(grid == null)
             return;
-        Gizmos.color = Color.black;
+        //if the agent is the leader, set the cube to blue, otherwise black
+        Gizmos.color = (leader) ? Color.blue:Color.black;
         Gizmos.DrawCube(grid.NodeFromWorldPoint(transform.position).WorldPosition, Vector3.one / 0.75f);
     }
 }
