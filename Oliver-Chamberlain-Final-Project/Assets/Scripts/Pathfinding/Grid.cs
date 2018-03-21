@@ -27,8 +27,7 @@ public class Grid : MonoBehaviour {
 
     [Space]
     private bool showGoalNode = true;
-    [SerializeField]
-    private bool useAstarNode;
+
     //colours to represent each grid square
     [Space]
     [SerializeField]

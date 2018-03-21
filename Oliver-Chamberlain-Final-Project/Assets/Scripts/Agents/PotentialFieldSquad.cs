@@ -22,6 +22,8 @@ public class PotentialFieldSquad : MonoBehaviour {
 
     public float formationFieldUpdateInterval = 0.25f;
 
+
+
     /*
      * formation info
      */
@@ -141,9 +143,9 @@ public class PotentialFieldSquad : MonoBehaviour {
                 for (int i = 0; i < formationSize; i++)
                 {
                     //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
-                    if (formationMatrix[(formationSize / 2) - 1, i] == true)
+                    if (formationMatrix[(formationSize -1) / 2, i] == true)
                     {
-                        leaderPositionInFormation = new Vector2((formationSize / 2) - 1, i);
+                        leaderPositionInFormation = new Vector2((formationSize -1)/ 2, i);
 
                     }
                     //if the formation size is greater than one,
@@ -159,9 +161,9 @@ public class PotentialFieldSquad : MonoBehaviour {
                 for (int i = 0; i < formationSize; i++)
                 {
                     //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
-                    if (formationMatrix[ i, (formationSize / 2) - 1] == true)
+                    if (formationMatrix[ i, (formationSize -1)/ 2] == true)
                     {
-                        leaderPositionInFormation = new Vector2(i,(formationSize / 2) - 1);
+                        leaderPositionInFormation = new Vector2(i,(formationSize -1)/ 2);
 
                     }
                     //if the formation size is greater than one,
@@ -177,9 +179,9 @@ public class PotentialFieldSquad : MonoBehaviour {
                 for (int i = formationSize-1; i >= 0; i--)
                 {
                     //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
-                    if (formationMatrix[(formationSize / 2) - 1, i] == true)
+                    if (formationMatrix[(formationSize -1)/ 2 , i] == true)
                     {
-                        leaderPositionInFormation = new Vector2((formationSize / 2) - 1, i);
+                        leaderPositionInFormation = new Vector2((formationSize - 1)/ 2, i);
 
                     }
                     //if the formation size is greater than one,
@@ -194,9 +196,9 @@ public class PotentialFieldSquad : MonoBehaviour {
                 for (int i = formationSize - 1; i >= 0; i--)
                 {
                     //if the centremost, or left centre column is true and contains an agent, set this as the leader's position
-                    if (formationMatrix[i, (formationSize / 2) - 1] == true)
+                    if (formationMatrix[i, (formationSize - 1) / 2 ] == true)
                     {
-                        leaderPositionInFormation = new Vector2(i, (formationSize / 2) - 1);
+                        leaderPositionInFormation = new Vector2(i, (formationSize - 1)/ 2);
 
                     }
                     //if the formation size is greater than one,

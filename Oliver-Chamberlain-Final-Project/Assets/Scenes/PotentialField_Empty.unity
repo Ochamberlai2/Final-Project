@@ -271,62 +271,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 76978317}
---- !u!1001 &79649953
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1134975243}
-    m_Modifications:
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -36.49738
-      objectReference: {fileID: 0}
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 54.24581
-      objectReference: {fileID: 0}
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_Name
-      value: Potential field agent (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
-        type: 2}
-      propertyPath: leader
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
-        type: 2}
-      propertyPath: velocityMultiplier
-      value: 3
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &132264586
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,7 +309,6 @@ MonoBehaviour:
   gridSizeX: 0
   gridSizeY: 0
   maxSize: 0
-  useAstarNode: 0
   WalkableGridColor: {r: 0, g: 0, b: 0, a: 1}
   UnwalkableGridColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!4 &132264588
@@ -396,7 +339,8 @@ MonoBehaviour:
   goalFieldMass: 240
   staticFieldMass: 80
   staticFieldInfluence: 5
-  AgentMass: 1.5
+  AgentMass: 20
+  agentPersonalFieldInfluence: 4.5
   squadToShow: {fileID: 0}
 --- !u!114 &132264590
 MonoBehaviour:
@@ -420,7 +364,7 @@ GameObject:
   - component: {fileID: 195379475}
   - component: {fileID: 195379474}
   m_Layer: 5
-  m_Name: Show heat map
+  m_Name: Show true agent positions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -510,9 +454,9 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 132264587}
-        m_MethodName: ShowHeatMap
-        m_Mode: 0
+      - m_Target: {fileID: 1835810137}
+        m_MethodName: ShowAgentTruePosition
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -523,7 +467,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!4 &241895313 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61,
@@ -603,7 +547,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -46.187378
+      value: -46.12
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -611,7 +555,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 52.91581
+      value: 45.71
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -636,6 +580,10 @@ Prefab:
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_Name
       value: Potential field agent (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_TagString
+      value: Agent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -1205,11 +1153,6 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_IsOn: 1
---- !u!4 &622009057 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61,
-    type: 2}
-  m_PrefabInternal: {fileID: 79649953}
 --- !u!1 &676335182
 GameObject:
   m_ObjectHideFlags: 0
@@ -1640,7 +1583,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 30
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 3
     m_MaxSize: 59
     m_Alignment: 3
@@ -1649,7 +1592,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Show heat map
+  m_Text: Show true agent positions
 --- !u!222 &1017916657
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1665,7 +1608,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -33.95738
+      value: -13.74
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1673,7 +1616,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 59.09581
+      value: 37.22
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1704,6 +1647,10 @@ Prefab:
         type: 2}
       propertyPath: velocityMultiplier
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_TagString
+      value: Agent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -1744,16 +1691,9 @@ Transform:
   - {fileID: 1796649027}
   - {fileID: 241895313}
   - {fileID: 1923986772}
-  - {fileID: 622009057}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1168887300 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
-    type: 2}
-  m_PrefabInternal: {fileID: 79649953}
-  m_Script: {fileID: 11500000, guid: e191d834fedd68b4f852ef8a56d7192d, type: 3}
 --- !u!4 &1240875562 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61,
@@ -1812,6 +1752,10 @@ Prefab:
       propertyPath: velocityMultiplier
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_TagString
+      value: Agent
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
   m_IsPrefabParent: 0
@@ -1830,7 +1774,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -49.277378
+      value: -77.54
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1838,7 +1782,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 56.26581
+      value: 59.33
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1873,6 +1817,10 @@ Prefab:
         type: 2}
       propertyPath: velocityMultiplier
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_TagString
+      value: Agent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2652,7 +2600,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -40.340378
+      value: -61.43
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2660,7 +2608,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 52.116837
+      value: 32.52
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2695,6 +2643,10 @@ Prefab:
         type: 2}
       propertyPath: velocityMultiplier
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_TagString
+      value: Agent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2978,12 +2930,10 @@ MonoBehaviour:
   - {fileID: 1507841481}
   - {fileID: 464922766}
   - {fileID: 1329719433}
-  - {fileID: 1168887300}
-  formationPointsInRelationToLeader: []
   squadLeader: {fileID: 0}
-  leaderPositionInFormation: {x: 0, y: 0}
   formationFieldUpdateInterval: 0.05
   currentFormation: {fileID: 11400000, guid: c3a551d6dc29da84eb72284d6028e138, type: 2}
+  moveDir: 0
   formationFieldStrength: 240
 --- !u!4 &2085008146
 Transform:

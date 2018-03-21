@@ -9,17 +9,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f68ad5af695d4b941bcbcf81ab6723ce, type: 3}
-  m_Name: (6)Wedge
+  m_Name: (5)Wedge
   m_EditorClassIdentifier: 
-  NumOfAgents: 6
+  NumOfAgents: 5
   FormationLayout:
     rows:
-    - Column: 000001010000
-    - Column: 000100000100
-    - Column: 010000000001
-    - Column: 000000000000
-    - Column: 000000000000
-    - Column: 000000000000
-    NumAgents: 6
+    - Column: 0000010000
+    - Column: 0001000100
+    - Column: 0100000001
+    - Column: 0000000000
+    - Column: 0000000000
+    NumAgents: 5
   DistBetweenColumns: 2
   DistBetweenRows: 2

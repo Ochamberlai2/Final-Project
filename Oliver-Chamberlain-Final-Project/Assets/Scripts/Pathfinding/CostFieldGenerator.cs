@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Diagnostics;
 using UnityEngine.EventSystems;
-using System.Collections;
 
 
 public class CostFieldGenerator : MonoBehaviour
@@ -28,14 +26,15 @@ public class CostFieldGenerator : MonoBehaviour
     public float AgentMass = 1.5f;
     
 
-    public const float agentPersonalFieldInfluence = 2;//the agent's personal field strength is -infinity
+    public float agentPersonalFieldInfluence = 2;//the agent's personal field strength is -infinity
     #endregion
 
     Grid grid;
     #region UI vars
     public PotentialFieldSquad squadToShow;
-    bool showStaticField;
-    bool showGoalField;
+    private PotentialFieldAgent agentToShow;
+    private bool showStaticField;
+    private bool showGoalField;
 
     #endregion
 
@@ -100,26 +99,48 @@ public class CostFieldGenerator : MonoBehaviour
         //when left mouse is pressed, make a ray, then generate the vector field
         if (Input.GetKeyDown(KeyCode.Mouse0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit rayhit = new RaycastHit();
-            if (Physics.Raycast(ray, out rayhit))
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                //get the clicked node
-                Node clickedNode = grid.NodeFromWorldPoint(rayhit.point);
-                //then check that the node is walkable, if not we dont need to call the movement functions
-                if(grid.grid[clickedNode.gridX,clickedNode.gridY].walkable)
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit rayhit = new RaycastHit();
+                if (Physics.Raycast(ray, out rayhit))
                 {
-                    GenerateGoalField(rayhit.point);
+                    if(rayhit.collider.tag == "Agent")
+                    {
+                        agentToShow = rayhit.collider.GetComponent<PotentialFieldAgent>();
+                    }
+                }
+                else
+                {
+                    agentToShow = null;
+                }
+            }
+            else
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit rayhit = new RaycastHit();
+                if (Physics.Raycast(ray, out rayhit))
+                {
+                    //get the clicked node
+                    Node clickedNode = grid.NodeFromWorldPoint(rayhit.point);
+                    //then check that the node is walkable, if not we dont need to call the movement functions
+                    if (grid.grid[clickedNode.gridX, clickedNode.gridY].walkable)
+                    {
+                        GenerateGoalField(rayhit.point);
+                    }
                 }
             }
         }
+
+       
+
         setTextMeshText();
     }
 
     //sums all of the requested values and displays them 
     public void setTextMeshText()
     {
-        if(!showGoalField && !showStaticField && squadToShow == null)
+        if (!showGoalField && !showStaticField && squadToShow == null && agentToShow == null)
         {
             textMeshParent.SetActive(false);
         }
@@ -150,6 +171,10 @@ public class CostFieldGenerator : MonoBehaviour
                 if(squadToShow != null)
                 {
                     valueToShow += squadToShow.formationPotentialField[x, y];
+                }
+                if(agentToShow != null)
+                {
+                    valueToShow += agentToShow.agentFieldsSummed[x, y];
                 }
 
                 flowFieldCostText[x, y].text = valueToShow.ToString("F2");    
@@ -361,14 +386,14 @@ public class CostFieldGenerator : MonoBehaviour
                     }
                     //otherwise get the distance between the current agent and the node we are checking currently
                     float distBetweenObjects = Vector3.Distance(agentPositions[i].WorldPosition, neighbours[j].WorldPosition);
+   
                     //if this node is outside of the desired field of influence, then ignore it
                     if(distBetweenObjects > agentPersonalFieldInfluence)
                     {
                         continue;
                     }
-                    //otherwise square the distance
-                    //distBetweenObjects = distBetweenObjects * distBetweenObjects;
-                    //then figure out the mass of the field
+                   
+                    //then figure out the potential of the point
                     float force = AgentMass / distBetweenObjects;
 
                     //if the force of the tile being assigned to is already greater than the one which would be applied, do not overwrite it.
