@@ -5,19 +5,24 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PotentialFieldAgent : MonoBehaviour {
 
-    static private bool showTruePosition = true;
 
+    [HideInInspector]
     public bool leader; //whether or not the agent is the leader of the formation
-   
-    public Rigidbody rb;
+    private Rigidbody rb;//the agent's rigidbody 
+
+    [Header("Agent movement")]
+    [HideInInspector]
     public Vector3 desiredVelocity;
     public MovementDirection agentMovementDirection = MovementDirection.Down;
-    public float velocityMultiplier = 2f;
-    public float[,] agentFieldsSummed;
+    public float velocityMultiplier = 2f;//the agent's movement speed multiplier
+    [Header("Agent collision avoidance")]
+    public float AgentMass = 1.5f; //the mass of the agent
+    public float[,] agentFieldsSummed; //the agent collision avoidance APF
+    public float agentPersonalFieldInfluence = 2;//the agent's personal field strength is -infinity
 
-    private Grid grid;
     private List<Node> otherAgentNodes = new List<Node>();
-    private Node agentNode;
+    [HideInInspector]
+    public Node agentNode;
 
 
 
@@ -25,9 +30,8 @@ public class PotentialFieldAgent : MonoBehaviour {
     {
 
         rb = GetComponent<Rigidbody>();//assign the rigidbody
-        grid = FindObjectOfType<Grid>();//assign the reference to the grid
-        AgentManager.agents.Add(this);//add the agent to the list of agents in order to track position etc
-        agentFieldsSummed = new float[grid.gridSizeX, grid.gridSizeY];
+        SquadManager.Instance.agents.Add(this);//add the agent to the list of agents in order to track position etc
+        agentFieldsSummed = new float[SquadManager.Instance.grid.gridSizeX, SquadManager.Instance.grid.gridSizeY];
         StartCoroutine(UpdateAgentCollisionField(.05f));
     }
 
@@ -35,7 +39,7 @@ public class PotentialFieldAgent : MonoBehaviour {
     {
         while(true)
         {
-            agentFieldsSummed = CostFieldGenerator.Instance.GetAgentFieldsSummed(otherAgentNodes);//the agent-agent APF
+            agentFieldsSummed = CostFieldGenerator.GetAgentFieldsSummed(SquadManager.Instance.grid, otherAgentNodes,agentPersonalFieldInfluence,AgentMass);//the agent-agent APF
             yield return new WaitForSeconds(updateDelay);
         }
     }
@@ -59,8 +63,8 @@ public class PotentialFieldAgent : MonoBehaviour {
     private Vector3 FindNextNode(bool useAgentAvoidance, params float[][,] potentialFields)
     {
 
-        agentNode = grid.NodeFromWorldPoint(transform.position); //the node that the agent is currently standing on
-        List<Node> neighbourList = grid.GetNeighbours(agentNode); //list of neighbours of the agent's current node
+        agentNode = SquadManager.Instance.grid.NodeFromWorldPoint(transform.position); //the node that the agent is currently standing on
+        List<Node> neighbourList = SquadManager.Instance.grid.GetNeighbours(agentNode); //list of neighbours of the agent's current node
 
 
         Node bestNode = null;
@@ -70,14 +74,14 @@ public class PotentialFieldAgent : MonoBehaviour {
 
         otherAgentNodes.Clear();
         //find all nodes of the agents which are not the current one
-        for(int j = 0; j < AgentManager.agents.Count; j++)
+        for(int j = 0; j < SquadManager.Instance.agents.Count; j++)
         {
-            if (AgentManager.agents[j] == this)
+            if (SquadManager.Instance.agents[j] == this)
             {
                 continue;
             }
 
-            otherAgentNodes.Add(grid.NodeFromWorldPoint(AgentManager.agents[j].transform.position));
+            otherAgentNodes.Add(SquadManager.Instance.grid.NodeFromWorldPoint(SquadManager.Instance.agents[j].transform.position));
         }
       
 #endregion
@@ -87,7 +91,7 @@ public class PotentialFieldAgent : MonoBehaviour {
         for (int i = 0; i < neighbourList.Count; i++)
         {
             //if the node is non walkable or null, ignore it
-            if (!neighbourList[i].walkable || neighbourList[i] == null || !grid.ValidatePointOnGrid(neighbourList[i].gridX,neighbourList[i].gridY))
+            if (!neighbourList[i].walkable || neighbourList[i] == null || !SquadManager.Instance.grid.ValidatePointOnGrid(neighbourList[i].gridX,neighbourList[i].gridY))
                 continue;
             
 
@@ -142,7 +146,11 @@ public class PotentialFieldAgent : MonoBehaviour {
 
         return returnFloat;
     }
-
+    /// <summary>
+    /// Finds which direction the agent is moving in based on which neighbouring node has the highest potential
+    /// </summary>
+    /// <param name="bestNode">the highest potential neighbouring node</param>
+    /// <returns></returns>
     private MovementDirection FindAgentMovementDirection(Node bestNode)
     {
         MovementDirection returnDirection = MovementDirection.Down;
@@ -224,20 +232,5 @@ public class PotentialFieldAgent : MonoBehaviour {
 
         return returnDirection;
     }
-
-    private void OnDrawGizmos()
-    {
-        if(grid == null || !showTruePosition)
-            return;
-        //if the agent is the leader, set the cube to blue, otherwise black
-        Gizmos.color = (leader) ? Color.blue:Color.black;
-        Gizmos.DrawCube(grid.NodeFromWorldPoint(transform.position).WorldPosition, Vector3.one / 0.75f);
-    }
-
-    public void ShowAgentTruePosition()
-    {
-        showTruePosition = !showTruePosition;
-    }
-
 
 }

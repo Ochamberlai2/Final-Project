@@ -4,11 +4,7 @@ using System.Linq;
 public class Grid : MonoBehaviour {
 
     public LayerMask UnwalkableLayer;
-    #region DebugGizmos
 
-    [HideInInspector]
-    public bool DrawGcost;
-#endregion
     [Header("Grid Attributes")]
     public Vector2 gridWorldSize; //the size of the grid in world space
     [Range(0, 2)]
@@ -16,7 +12,7 @@ public class Grid : MonoBehaviour {
     [HideInInspector]
     public Node[,] grid;
 
-    [Space]
+    
     private float nodeDiameter;
     [HideInInspector]
     public int gridSizeX;//size of the grid arrays x dimension
@@ -25,8 +21,6 @@ public class Grid : MonoBehaviour {
     [HideInInspector]
     public int maxSize;//the grids x size multiplied by the y
 
-    [Space]
-    private bool showGoalNode = true;
 
     //colours to represent each grid square
     [Space]
@@ -44,7 +38,9 @@ public class Grid : MonoBehaviour {
 
         CreateGrid();
     }
-
+    /// <summary>
+    /// Generate the pathfinding grid using the Node class
+    /// </summary>
     private void CreateGrid()
     {
         grid = new Node[gridSizeX,gridSizeY];
@@ -64,6 +60,12 @@ public class Grid : MonoBehaviour {
             }
         }
     }
+
+    /// <summary>
+    /// Finds a node on the grid using a vector3 world point
+    /// </summary>
+    /// <param name="WorldPoint">The position in world space to check against</param>
+    /// <returns>The node situated at the specified point</returns>
     public Node NodeFromWorldPoint(Vector3 WorldPoint)
     {
         // we convert the world position into the percentage of how far along the grid it is
@@ -80,6 +82,12 @@ public class Grid : MonoBehaviour {
         //then we return the grid coordinate that we need 
         return grid[x, y];
     }
+
+    /// <summary>
+    /// Find diagonal and orthogonal neighbours of a given node
+    /// </summary>
+    /// <param name="node">The node to check against</param>
+    /// <returns>The diagonal and orthogonal neighbours of the argument</returns>
     public List<Node> GetNeighbours(Node node)
     {
         List<Node> Neighbours = new List<Node>();
@@ -106,11 +114,20 @@ public class Grid : MonoBehaviour {
             }     
         return Neighbours;
     }
-   public bool ValidatePointOnGrid(int x, int y)
+    /// <summary>
+    /// Validate that a grid position is inside of the grid
+    /// </summary>
+    /// <param name="x">Distance along the x axis of the grid</param>
+    /// <param name="y">Distance along the y axis of the grid</param>
+    /// <returns>true if the point is on the grid, false if not</returns>
+    public bool ValidatePointOnGrid(int x, int y)
     {
         return (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY);
     }
 
+    /// <summary>
+    /// Draw gizmos relating to the grid itself.
+    /// </summary>
     private void OnDrawGizmos()
     {
         //wire cube for showing the outside bounds of the grid
@@ -120,30 +137,7 @@ public class Grid : MonoBehaviour {
         {
             foreach(Node node in grid)
             {
-                if (DrawGcost)
-                {
-                    float normalisedCost = ((float)CostFieldGenerator.Instance.goalCostField[node.gridX, node.gridY]
-                        - (float)CostFieldGenerator.Instance.staticObstacleCostField[node.gridX, node.gridY])
-                        / (float)CostFieldGenerator.Instance.goalFieldMass;
-
-                    //if the nodes cost is more than zero, lerp between black and red
-                    if(normalisedCost >= 0)
-                    {
-                        Gizmos.color = (node.walkable)? Color.Lerp(Color.black,Color.red, normalisedCost) : Color.black;
-                    }
-                    //otherwise lerp between black and blue
-                    else
-                    {
-                        Gizmos.color = (node.walkable) ? Color.Lerp(Color.black, Color.white, normalisedCost) : Color.black;
-                    }
-                    Gizmos.DrawCube(node.WorldPosition, new Vector3(1,0,1) * (nodeDiameter - .1f));
-                }
-                if(node.goalNode && showGoalNode)
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawSphere(node.WorldPosition, nodeRadius);
-                }
-
+                //draw each node in the grid
                 Gizmos.color = (node.walkable) ? WalkableGridColor : UnwalkableGridColor;
                 Gizmos.DrawWireCube(node.WorldPosition, new Vector3(0.95f,0,0.95f)* nodeDiameter);
 
@@ -152,10 +146,5 @@ public class Grid : MonoBehaviour {
         }
     }
   
-    //for UI interfacing purposes
-    public void ShowGoalNode(bool show)
-    {
-        showGoalNode = show;
-    }
 
 }

@@ -7,8 +7,6 @@ public class Node
     public bool walkable;
 
 
-    public bool goalNode; //for debugging
-
 
 
 

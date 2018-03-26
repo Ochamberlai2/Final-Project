@@ -13,30 +13,36 @@ public enum MovementDirection
 
 public class PotentialFieldSquad : MonoBehaviour {
 
-    
+    //debug gizmo colours
+    [Header("Squad Gizmo Colours")]
+    public Color goalColour = Color.green;
+    public Color leaderColour = Color.blue;
+    public Color standardAgentColour = Color.black;
 
+    [HideInInspector]
+    public Node goalNode;//saved node to show for debugging
+
+    public float[,] goalCostField;//represents the gravitational force of each grid tile in relation to the goal node
+    public float[,] formationPotentialField;
+    [Header("Potential field values")]
+    public float goalFieldMass;
+
+    [SerializeField]
+    private float formationFieldStrength;//strength of the formation field
+    public float formationFieldUpdateInterval = 0.25f; //the number of times a second that the formation field updates
+
+
+    [Header("Formation information")]
     public List<PotentialFieldAgent> squadAgents;
 
     public PotentialFieldAgent squadLeader;
-   // public Vector2 leaderPositionInFormation;
-
-    public float formationFieldUpdateInterval = 0.25f;
-
-
-
-    /*
-     * formation info
-     */
     public Formation currentFormation;
 
 
-    public float[,] formationPotentialField;
 
-    private Dictionary<MovementDirection, List<Vector2>> formationDirections;
+    private Dictionary<MovementDirection, List<Vector2>> formationDirections;//points in the formation in relation to the leader's position, for all four orthogonal  directions
 
 
-    [SerializeField]
-    private float formationFieldStrength;
     private Grid grid;
 
 
@@ -45,13 +51,19 @@ public class PotentialFieldSquad : MonoBehaviour {
     {
 
         grid = FindObjectOfType<Grid>();
+        goalCostField = new float[grid.gridSizeX, grid.gridSizeY];
         formationPotentialField = new float[grid.gridSizeX,grid.gridSizeY];
         formationDirections = new Dictionary<MovementDirection, List<Vector2>>();
 
+        SquadManager.Instance.RegisterNewSquad(this);
+
         try
         {
+            if (squadAgents.Count == 0)
+                Debug.LogError("Squad is empty and invalid");
             foreach (PotentialFieldAgent agent in squadAgents)
             {
+                
                 //call the initialisation function for all of the agents(replaces start)
                 agent.Initialise();
 
@@ -76,12 +88,15 @@ public class PotentialFieldSquad : MonoBehaviour {
         StartCoroutine(SquadMovement());
     }
 
-    //calls the movement function for each agent in the squad, every fixed update cycle
+
+
+    /// <summary>
+    ///   calls the movement function for each agent in the squad, every fixed update
+    /// </summary>
     private IEnumerator SquadMovement()
     {
         while (true)
         {
-           
             //loop through all squad and call their movement functions
             for(int i = 0; i < squadAgents.Count; i++)
             {
@@ -89,49 +104,46 @@ public class PotentialFieldSquad : MonoBehaviour {
                 if (squadAgents[i] == squadLeader)
                 {
                     //leader code
-                    squadAgents[i].Movement(false,CostFieldGenerator.Instance.staticObstacleCostField, CostFieldGenerator.Instance.goalCostField);
+                    squadAgents[i].Movement(false,SquadManager.Instance.staticObstacleCostField, goalCostField);
                     yield return new WaitForFixedUpdate();
                 }
                 else
                 {
                     // follower code
-                    squadAgents[i].Movement(true,  CostFieldGenerator.Instance.staticObstacleCostField, formationPotentialField);
+                    squadAgents[i].Movement(true,  SquadManager.Instance.staticObstacleCostField, formationPotentialField);
                     yield return new WaitForFixedUpdate();
                 }
             }
-            
         }
     }
-    //updates the formation field every x seconds
+    /// <summary>
+    ///    updates the formation field every x seconds
+    /// </summary>
     private IEnumerator UpdateSquadField(float interval)
     {
         while(true)
         {
-           CostFieldGenerator.Instance.GenerateFormationField(grid.NodeFromWorldPoint(squadLeader.transform.position), formationDirections[squadLeader.agentMovementDirection], formationFieldStrength, SetSquadField);
+            CostFieldGenerator.GenerateFormationField(grid, grid.NodeFromWorldPoint(squadLeader.transform.position), formationDirections[squadLeader.agentMovementDirection], formationFieldStrength, ref formationPotentialField);
             yield return new WaitForSeconds(interval);
         }
         
     }
 
-    //callback function from CostFieldGenerator.GenerateFormationField
-    private void SetSquadField(float[,] potentialField)
-    {
-        formationPotentialField = potentialField;
-    }
+
 
     #region formation matrix functions
 
+    /// <summary>
+    /// Finds the leader's position in the current formation.
+    /// </summary>
+    /// <param name="movementDirection">the direction that the current formation matrix faces</param>
+    /// <param name="formationMatrix">the current formation matrix</param>
+    /// <returns></returns>
     public Vector2 FindLeaderPositionInFormation(MovementDirection movementDirection, bool[,] formationMatrix)
     {
         //the formation width or depth can only be as high as the number of agents in the formation
         int formationSize = currentFormation.NumOfAgents;
         Vector2 leaderPositionInFormation = Vector2.zero;
-      
-
-
-
-
-
 
         switch (movementDirection)
         {
@@ -214,7 +226,9 @@ public class PotentialFieldSquad : MonoBehaviour {
         return leaderPositionInFormation;
     }
 
-    //initialises formation 
+    /// <summary>
+    ///Initialises the formation and finds all permutations of the formation rotation
+    /// </summary>
     private void GetFormationRotations()
     {
         //find the current formation's matrix
@@ -230,7 +244,12 @@ public class PotentialFieldSquad : MonoBehaviour {
         }
     }
 
-
+    /// <summary>
+    /// Find formation positions in relation to the leader's current position
+    /// </summary>
+    /// <param name="formationMatrix">the current formation matrix</param>
+    /// <param name="movementDirection">the direction that the formation matrix is facing</param>
+    /// <returns></returns>
     public List<Vector2> FindFormationPointsInRelationToLeader(bool[,] formationMatrix, MovementDirection movementDirection)
     {
         List<Vector2> formationPointsInRelationToLeader = new List<Vector2>();
@@ -257,7 +276,9 @@ public class PotentialFieldSquad : MonoBehaviour {
     }
 
 
-    //rotates the formation matrix 90 degrees
+    /// <summary>
+    ///  rotates the formation matrix 90 degrees
+    /// </summary>
     public void RotateMatrix90(ref bool[,] matrix, int matrixSize)
     {
         bool[,] newMat = new bool[matrixSize, matrixSize];
@@ -272,7 +293,9 @@ public class PotentialFieldSquad : MonoBehaviour {
         matrix = newMat;
     }
 
-    //gets the formation matrix from the argument
+    /// <summary>
+    ///gets the formation matrix from the argument
+    /// </summary>
     public bool[,] GetFormationMatrix(Formation formation)
     {
         bool[,] currentFormationMatrix = new bool[formation.NumOfAgents, formation.NumOfAgents];
@@ -285,21 +308,5 @@ public class PotentialFieldSquad : MonoBehaviour {
         }
         return currentFormationMatrix;
     }
-    #endregion
-
-    #region UI interfacing 
-    public void ShowSquadField(bool show)
-    {
-        if(show == true)
-        {
-            CostFieldGenerator.Instance.squadToShow = this;
-        }
-        else
-        {
-            CostFieldGenerator.Instance.squadToShow = null;
-        }
-
-    }
-
     #endregion
 }

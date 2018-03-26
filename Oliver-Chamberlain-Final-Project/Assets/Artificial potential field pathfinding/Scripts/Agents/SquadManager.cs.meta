@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 3aa2709cead6f044b859de724ccd4f68
+timeCreated: 1522075910
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - squadToOrder: {instanceID: 0}
+  - squadSelectTickboxPrefab: {fileID: 1816016802694038, guid: 6eb309cf75e610445b7a825173b90c6b,
+      type: 2}
+  - squadToShow: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1222793206976290}
+  m_IsPrefabParent: 1
+--- !u!1 &1222793206976290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4118122746362744}
+  - component: {fileID: 114326747209437012}
+  - component: {fileID: 114065391713070732}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4118122746362744
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1222793206976290}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114065391713070732
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1222793206976290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aa2709cead6f044b859de724ccd4f68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agents: []
+  squadToOrder: {fileID: 0}
+  squadSelectTickboxPrefab: {fileID: 1816016802694038, guid: 6eb309cf75e610445b7a825173b90c6b,
+    type: 2}
+  squadToShow: {fileID: 0}
+  staticFieldMass: 170
+  staticFieldInfluence: 5
+--- !u!114 &114326747209437012
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1222793206976290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bab5793b76a0e494487e423aea2e7f38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnwalkableLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  DrawGcost: 0
+  gridWorldSize: {x: 181, y: 101}
+  nodeRadius: 1.25
+  gridSizeX: 0
+  gridSizeY: 0
+  maxSize: 0
+  WalkableGridColor: {r: 0, g: 0, b: 0, a: 1}
+  UnwalkableGridColor: {r: 1, g: 0, b: 0, a: 1}

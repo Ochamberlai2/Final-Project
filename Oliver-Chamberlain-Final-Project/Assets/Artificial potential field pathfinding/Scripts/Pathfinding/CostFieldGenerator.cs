@@ -1,198 +1,43 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 
-public class CostFieldGenerator : MonoBehaviour
+
+public static class CostFieldGenerator
 {
 
 
-
-    public float[,] zeroField;
-
-    #region field variables
-    public float[,] goalCostField;//represents the gravitational force of each grid tile in relation to the goal node
-    [Header("Potential field strength variables")]
-    public float goalFieldMass;
-
-    public float[,] staticObstacleCostField;//represents the gravitational force of each grid tile in relation to the closest obstacle node
-    public float staticFieldMass;
-    [SerializeField]
-    private float staticFieldInfluence;
-
-    [SerializeField]
-    public float AgentMass = 1.5f;
-    
-
-    public float agentPersonalFieldInfluence = 2;//the agent's personal field strength is -infinity
-    #endregion
-
-    Grid grid;
-    #region UI vars
-    public PotentialFieldSquad squadToShow;
-    private PotentialFieldAgent agentToShow;
-    private bool showStaticField;
-    private bool showGoalField;
-
-    #endregion
-
-    public TextMesh[,] flowFieldCostText;
-
-    GameObject textMeshParent;
-
-    private static CostFieldGenerator instance;
-
-    public static CostFieldGenerator Instance
-    {
-        get
-        {
-            //if instance is null try to find something that can be the instance
-            if (instance == null)
-            {
-                instance = FindObjectOfType<CostFieldGenerator>();
-                //if not, then make a new object and add a component to it which becomes the instance
-                if (instance == null)
-                {
-                    GameObject newGameObject = new GameObject();
-                    newGameObject.name = "FlowFieldGenerator";
-                    instance = newGameObject.AddComponent<CostFieldGenerator>();
-                }
-            }
-            //then return it
-            return instance;
-        }
-    }
-
-
-    public void Awake()
-    {
-
-        grid = FindObjectOfType<Grid>();
-        goalCostField = new float[grid.gridSizeX, grid.gridSizeY];
-        staticObstacleCostField = new float[grid.gridSizeX, grid.gridSizeY];
-        zeroField = new float[grid.gridSizeX, grid.gridSizeY];
-        flowFieldCostText = new TextMesh[grid.gridSizeX, grid.gridSizeY];
-        textMeshParent = GameObject.Find("TextMeshes");
-
-        //generate line renderers to represent each vector
-        for (int x = 0; x < grid.gridSizeX; x++)
-        {
-            for (int y = 0; y < grid.gridSizeY; y++)
-            {
-                //text meshes
-                flowFieldCostText[x, y] = new GameObject().AddComponent<TextMesh>();
-                flowFieldCostText[x, y].transform.SetParent(textMeshParent.transform);
-                flowFieldCostText[x, y].transform.localScale = Vector3.one / 2;
-                flowFieldCostText[x, y].gameObject.name = "(" + x + "," + y + ")";
-                flowFieldCostText[x, y].transform.position = new Vector3(grid.grid[x, y].WorldPosition.x - (grid.nodeRadius), grid.grid[x, y].WorldPosition.y , grid.grid[x, y].WorldPosition.z + (grid.nodeRadius/2));
-                flowFieldCostText[x, y].transform.Rotate(Vector3.right, 90);
-            }
-        }
-        GenerateStaticObstacleField();
-        setTextMeshText();
-    }
-    public void Update()
-    {
-
-        //when left mouse is pressed, make a ray, then generate the vector field
-        if (Input.GetKeyDown(KeyCode.Mouse0) && !EventSystem.current.IsPointerOverGameObject())
-        {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit rayhit = new RaycastHit();
-                if (Physics.Raycast(ray, out rayhit))
-                {
-                    if(rayhit.collider.tag == "Agent")
-                    {
-                        agentToShow = rayhit.collider.GetComponent<PotentialFieldAgent>();
-                    }
-                }
-                else
-                {
-                    agentToShow = null;
-                }
-            }
-            else
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit rayhit = new RaycastHit();
-                if (Physics.Raycast(ray, out rayhit))
-                {
-                    //get the clicked node
-                    Node clickedNode = grid.NodeFromWorldPoint(rayhit.point);
-                    //then check that the node is walkable, if not we dont need to call the movement functions
-                    if (grid.grid[clickedNode.gridX, clickedNode.gridY].walkable)
-                    {
-                        GenerateGoalField(rayhit.point);
-                    }
-                }
-            }
-        }
-
-       
-
-        setTextMeshText();
-    }
-
-    //sums all of the requested values and displays them 
-    public void setTextMeshText()
-    {
-        if (!showGoalField && !showStaticField && squadToShow == null && agentToShow == null)
-        {
-            textMeshParent.SetActive(false);
-        }
-        else
-        {
-            textMeshParent.SetActive(true);
-        }
-
-        for (int x = 0; x < grid.gridSizeX; x++)
-        {
-            for (int y = 0; y < grid.gridSizeY; y++)
-            {
-                if (!grid.grid[x, y].walkable)
-                {
-                    flowFieldCostText[x, y].text = "-inf";
-                    continue;
-                }
-                float valueToShow = 0f;
-
-                if(showGoalField)
-                {
-                    valueToShow += goalCostField[x, y];
-                }
-                if(showStaticField)
-                {
-                    valueToShow += staticObstacleCostField[x, y];
-                }
-                if(squadToShow != null)
-                {
-                    valueToShow += squadToShow.formationPotentialField[x, y];
-                }
-                if(agentToShow != null)
-                {
-                    valueToShow += agentToShow.agentFieldsSummed[x, y];
-                }
-
-                flowFieldCostText[x, y].text = valueToShow.ToString("F2");    
-            }
-        }
-    }
-
-
     #region goal field
-    public void GenerateGoalField(Vector3 target)
+    /// <summary>
+    /// Generate the potential values for every node on the grid for a given goal node
+    /// </summary>
+    /// <param name="grid">the grid to check against</param>
+    /// <param name="target">the target point in the world</param>
+    /// <param name="goalCostField">the multidimensional float array to store the potential values in.</param>
+    /// <param name="goalFieldMass">the strength of the field's gravitational pull</param>
+    /// <param name="goalNode">a cached reference to the goal node. Used for gizmos for debugging</param>
+    public static void GenerateGoalField(Grid grid,Vector3 target, ref float[,] goalCostField, float goalFieldMass, ref Node goalNode)
     {
+        /*
+         * 
+         * 
+         * THIS NEEDS TO HAVE A CLOSED SET, THIS IS AN INCORRECT ALGORITHM
+         * 
+         * 
+         * 
+         */
+
+
         List<Node> activeSet = new List<Node>();
+        //reset the cost for all nodes in the field
         foreach (Node node in grid.grid)
         {
             goalCostField[node.gridX, node.gridY] = 0;
-            node.goalNode = false;
         }
         //get the target node
         Node targetNode = grid.NodeFromWorldPoint(target);
-        targetNode.goalNode = true;
+        goalNode = targetNode;
+
         //set the value of the target node.
         goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldMass;
  
@@ -204,7 +49,6 @@ public class CostFieldGenerator : MonoBehaviour
         {
             Node toCheck = activeSet[0];
             //loop through the neighbour list of the front node of the active set
-            //get only the orthogonal neighbours
             Node[] neighbourArr = grid.GetNeighbours(toCheck).ToArray();
 
 
@@ -220,14 +64,13 @@ public class CostFieldGenerator : MonoBehaviour
                 if (neighbourArr[i] == null || goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] != 0 || neighbourArr[i] == targetNode || !neighbourArr[i].walkable)
                     continue;
 
-                //generate r^2 for the below equation
-                float distBetweenObjects = Vector3.Distance(targetNode.WorldPosition, neighbourArr[i].WorldPosition);
-                //then square it
-                //distBetweenObjects = distBetweenObjects * distBetweenObjects;
+                //generate the distance value used in the potential equation
+                float distBetweenPoints = Vector3.Distance(targetNode.WorldPosition, neighbourArr[i].WorldPosition);
+              
 
-                //here I'm using the equation for gravitational force: G * ((m1 * m2)/r^2)
-                float force = /*GravitationalConstant **/ ((goalFieldMass) /distBetweenObjects);
-                goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] = force;
+                //potential = field strength / distance between the two points
+                float potential =goalFieldMass /distBetweenPoints;
+                goalCostField[neighbourArr[i].gridX, neighbourArr[i].gridY] = potential;
                 activeSet.Add(neighbourArr[i]);
             }
             activeSet.Remove(toCheck);
@@ -235,7 +78,14 @@ public class CostFieldGenerator : MonoBehaviour
     }
     #endregion
     #region obstacle avoidance
-    public void GenerateStaticObstacleField()
+    /// <summary>
+    /// Generates the artificial potential field for static obstacles in the world
+    /// </summary>
+    /// <param name="grid">the grid to check against</param>
+    /// <param name="staticObstacleCostField">the multidimensional array to store the potential field values in</param>
+    /// <param name="staticFieldInfluenceRadius">the radius from a given obstacle point before the potential is 0</param>
+    /// <param name="staticFieldStrength"> the strength of the potential field</param>
+    public static void GenerateStaticObstacleField(Grid grid, ref float[,] staticObstacleCostField, float staticFieldInfluenceRadius, float staticFieldStrength)
     {
          List<Node> openSet = new List<Node>();
         List<Node> obstacleNodes = new List<Node>();
@@ -298,13 +148,13 @@ public class CostFieldGenerator : MonoBehaviour
                     float distBetweenObjects = Vector3.Distance(obstacleNodes[i].WorldPosition,neighbours[j].WorldPosition);
                     float force = 0;
 
-                    if (distBetweenObjects >= staticFieldInfluence)//this should stop the field from acting past a 2 node radius 
+                    if (distBetweenObjects >= staticFieldInfluenceRadius)//this should stop the field from acting past a 2 node radius 
                         continue;
 
                     //then square the distance
                     //distBetweenObjects = distBetweenObjects * distBetweenObjects;
                     //the mass of the field divided by the squared distance between them
-                    force =staticFieldMass / distBetweenObjects;
+                    force = staticFieldStrength / distBetweenObjects;
 
                     //if the negative force is greater than the already stored negative force, then update it
                     if(-force < staticObstacleCostField[neighbours[j].gridX,neighbours[j].gridY])
@@ -323,7 +173,7 @@ public class CostFieldGenerator : MonoBehaviour
 #endregion
     #region agent collision
     //this is an expensive function, can be optimised in the future by only generating potentials for points which are candidates
-    public float[,] GetAgentFieldsSummed(List<Node> agentPositions)
+    public static float[,] GetAgentFieldsSummed(Grid grid, List<Node> agentPositions, float agentPersonalFieldInfluence, float AgentMass)
     {   
         float[,] agentFields = new float[grid.gridSizeX, grid.gridSizeY];
 
@@ -346,16 +196,16 @@ public class CostFieldGenerator : MonoBehaviour
                         continue;
                     }
                     //otherwise get the distance between the current agent and the node we are checking currently
-                    float distBetweenObjects = Vector3.Distance(agentPositions[i].WorldPosition, neighbours[j].WorldPosition);
+                    float distBetweenPoints = Vector3.Distance(agentPositions[i].WorldPosition, neighbours[j].WorldPosition);
    
                     //if this node is outside of the desired field of influence, then ignore it
-                    if(distBetweenObjects > agentPersonalFieldInfluence)
+                    if(distBetweenPoints > agentPersonalFieldInfluence)
                     {
                         continue;
                     }
                    
                     //then figure out the potential of the point
-                    float force = AgentMass / distBetweenObjects;
+                    float force = AgentMass / distBetweenPoints;
 
                     //if the force of the tile being assigned to is already greater than the one which would be applied, do not overwrite it.
                     if(-force < agentFields[neighbours[j].gridX,neighbours[j].gridY])
@@ -371,11 +221,19 @@ public class CostFieldGenerator : MonoBehaviour
     }
     #endregion
     #region formation
-    public void GenerateFormationField(Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength, System.Action<float[,]> result)
+    /// <summary>
+    /// Generates the artificial potential field used for moving units into a formation
+    /// </summary>
+    /// <param name="grid">the grid to check against</param>
+    /// <param name="leaderNode">the node that the formation leader is currently situated upon</param>
+    /// <param name="pointsInRelationToLeaderNode">all points in the formation stored as offsets from the leader's position</param>
+    /// <param name="fieldStrength">the strength of the potential field</param>
+    /// <param name="result">a callback function to handle saving</param>
+    public static void GenerateFormationField(Grid grid, Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength, ref float[,] formationField)
     {
-        float [,]formationField = new float[grid.gridSizeX,grid.gridSizeY];
+       formationField = new float[grid.gridSizeX,grid.gridSizeY];
         //get the nodes to generate a field around
-        Node[] formationNodes = GetFormationNodes(leaderNode, pointsInRelationToLeaderNode).ToArray();
+        Node[] formationNodes = GetFormationNodes(grid, leaderNode, pointsInRelationToLeaderNode).ToArray();
         Queue<Node> openSet = new Queue<Node>();
 
         //add all neighbours of these nodes to the open set to begin with
@@ -394,23 +252,30 @@ public class CostFieldGenerator : MonoBehaviour
             if (!node.walkable)
                 continue;
 
-            //generate r^2 for the below equation
-            float distBetweenObjects = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
-            //distBetweenObjects = distBetweenObjects * distBetweenObjects;
+            //generate distance for the potential equation
+            float distBetweenPoints = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
+          
 
-            //f = mass / r^2
-            float force = fieldStrength / distBetweenObjects;
+            //potential = field strength / distance between the two points
+            float force = fieldStrength / distBetweenPoints;
             //apply the value to the field
             formationField[gridX, gridY] = force;
 
         }
-        result(formationField);
+
     } 
 
-    private List<Node> GetFormationNodes(Node leaderNode, List<Vector2> pointsInRelationToLeaderNode)
+    /// <summary>
+    /// Find which nodes should belong in the formation given a list of points in relation to the formation leader
+    /// </summary>
+    /// <param name="grid">grid to check against</param>
+    /// <param name="leaderNode">the node that the leader of the formation is currently standing on</param>
+    /// <param name="pointsInRelationToLeaderNode">a list of points in the formation in relation to the leader's position in the formation</param>
+    /// <returns>A list of the nodes that should be a part of the formation</returns>
+    private static List<Node> GetFormationNodes(Grid grid, Node leaderNode, List<Vector2> pointsInRelationToLeaderNode)
     {
         List<Node> returnList = new List<Node>();
-
+        //loop through all of the points in relation to the leader and find which node they should be attributed to given the leader's positional node
         foreach(Vector2 offset in pointsInRelationToLeaderNode)
         {
             if(grid.ValidatePointOnGrid((int)offset.x + leaderNode.gridX,(int)offset.y + leaderNode.gridY))
@@ -423,7 +288,13 @@ public class CostFieldGenerator : MonoBehaviour
 
     }
 
-    private float FindDistanceToClosestFormationPosition(Vector3 checkingNodePos,Node[] formationNodes)
+    /// <summary>
+    /// Find a node's distance from the closest node within the formation
+    /// </summary>
+    /// <param name="checkingNodePos">the position of the node currently being checked</param>
+    /// <param name="formationNodes">an array of the nodes contained in the formation</param>
+    /// <returns></returns>
+    private static float FindDistanceToClosestFormationPosition(Vector3 checkingNodePos,Node[] formationNodes)
     {
 
         float[] nodeDistances = new float[formationNodes.Length];
@@ -452,16 +323,7 @@ public class CostFieldGenerator : MonoBehaviour
         return lowestDist;
     }
     #endregion
-    #region UI interfacing functions
-    public void ShowStaticCostField(bool show)
-    {
-        showStaticField = show;
-    }
-    public void ShowGoalCostField(bool show)
-    {
-        showGoalField = show;
-    }
 
-#endregion
+
 
 }

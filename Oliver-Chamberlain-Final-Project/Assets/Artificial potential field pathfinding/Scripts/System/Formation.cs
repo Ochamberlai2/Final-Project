@@ -7,8 +7,7 @@ public class Formation : ScriptableObject
 {
     public int NumOfAgents;
     public RowData FormationLayout;
-    public float DistBetweenColumns;
-    public float DistBetweenRows;
+
 
     void OnValidate()
     {
