@@ -6,8 +6,6 @@ using UnityEngine.EventSystems;
 public class CostFieldGenerator : MonoBehaviour
 {
 
-    [HideInInspector]
-    public Vector3 targetPos;
 
 
     public float[,] zeroField;
@@ -183,7 +181,7 @@ public class CostFieldGenerator : MonoBehaviour
     }
 
 
-
+    #region goal field
     public void GenerateGoalField(Vector3 target)
     {
         List<Node> activeSet = new List<Node>();
@@ -194,9 +192,6 @@ public class CostFieldGenerator : MonoBehaviour
         }
         //get the target node
         Node targetNode = grid.NodeFromWorldPoint(target);
-        ////////////////////////////////
-        targetPos = targetNode.WorldPosition;
-        ///////////////////////////////
         targetNode.goalNode = true;
         //set the value of the target node.
         goalCostField[targetNode.gridX, targetNode.gridY] = goalFieldMass;
@@ -210,7 +205,7 @@ public class CostFieldGenerator : MonoBehaviour
             Node toCheck = activeSet[0];
             //loop through the neighbour list of the front node of the active set
             //get only the orthogonal neighbours
-            Node[] neighbourArr = grid.GetNeighbours(toCheck).ToArray();//grid.GetOrthogonalNeighbours(toCheck);
+            Node[] neighbourArr = grid.GetNeighbours(toCheck).ToArray();
 
 
             for (int i = 0; i < neighbourArr.Length; i++)
@@ -238,7 +233,8 @@ public class CostFieldGenerator : MonoBehaviour
             activeSet.Remove(toCheck);
         }
     }
-
+    #endregion
+    #region obstacle avoidance
     public void GenerateStaticObstacleField()
     {
          List<Node> openSet = new List<Node>();
@@ -324,43 +320,8 @@ public class CostFieldGenerator : MonoBehaviour
             }//end of while
         }//end of for
     }//EOF
-
-    public void GenerateFormationField(Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength, System.Action<float[,]> result)
-    {
-        float [,]formationField = new float[grid.gridSizeX,grid.gridSizeY];
-        //get the nodes to generate a field around
-        Node[] formationNodes = GetFormationNodes(leaderNode, pointsInRelationToLeaderNode).ToArray();
-        Queue<Node> openSet = new Queue<Node>();
-
-        //add all neighbours of these nodes to the open set to begin with
-        for (int i = 0; i < formationNodes.Length; i++)
-        {
-            formationField[formationNodes[i].gridX, formationNodes[i].gridY] = fieldStrength;
-            openSet.Enqueue(formationNodes[i]);
-        }
-
-
-        foreach(Node node in grid.grid)
-        {
-            int gridX = node.gridX;
-            int gridY = node.gridY;
-            //if the node isnt walkable, ignore it
-            if (!node.walkable)
-                continue;
-
-            //generate r^2 for the below equation
-            float distBetweenObjects = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
-            //distBetweenObjects = distBetweenObjects * distBetweenObjects;
-
-            //f = mass / r^2
-            float force = fieldStrength / distBetweenObjects;
-            //apply the value to the field
-            formationField[gridX, gridY] = force;
-
-        }
-        result(formationField);
-    } 
-
+#endregion
+    #region agent collision
     //this is an expensive function, can be optimised in the future by only generating potentials for points which are candidates
     public float[,] GetAgentFieldsSummed(List<Node> agentPositions)
     {   
@@ -408,6 +369,43 @@ public class CostFieldGenerator : MonoBehaviour
         }
         return agentFields;
     }
+    #endregion
+    #region formation
+    public void GenerateFormationField(Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength, System.Action<float[,]> result)
+    {
+        float [,]formationField = new float[grid.gridSizeX,grid.gridSizeY];
+        //get the nodes to generate a field around
+        Node[] formationNodes = GetFormationNodes(leaderNode, pointsInRelationToLeaderNode).ToArray();
+        Queue<Node> openSet = new Queue<Node>();
+
+        //add all neighbours of these nodes to the open set to begin with
+        for (int i = 0; i < formationNodes.Length; i++)
+        {
+            formationField[formationNodes[i].gridX, formationNodes[i].gridY] = fieldStrength;
+            openSet.Enqueue(formationNodes[i]);
+        }
+
+
+        foreach(Node node in grid.grid)
+        {
+            int gridX = node.gridX;
+            int gridY = node.gridY;
+            //if the node isnt walkable, ignore it
+            if (!node.walkable)
+                continue;
+
+            //generate r^2 for the below equation
+            float distBetweenObjects = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
+            //distBetweenObjects = distBetweenObjects * distBetweenObjects;
+
+            //f = mass / r^2
+            float force = fieldStrength / distBetweenObjects;
+            //apply the value to the field
+            formationField[gridX, gridY] = force;
+
+        }
+        result(formationField);
+    } 
 
     private List<Node> GetFormationNodes(Node leaderNode, List<Vector2> pointsInRelationToLeaderNode)
     {
@@ -453,6 +451,7 @@ public class CostFieldGenerator : MonoBehaviour
 
         return lowestDist;
     }
+    #endregion
     #region UI interfacing functions
     public void ShowStaticCostField(bool show)
     {

@@ -6,15 +6,11 @@ public class Node
     public int gridX, gridY;
     public bool walkable;
 
-    //for debugging only
-    public bool searched;
-    public bool goalNode;
-    //for debugging only
+
+    public bool goalNode; //for debugging
 
 
 
-
-    public int gCost; //total path distance covered, used for both the A* pathfinding algorithm and the Dijksra algorithm used for the vector flow field
 
     public Node( Vector3 _worldPosition,Vector2 _GridPosition, bool _walkable)
     {

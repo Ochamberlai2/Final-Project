@@ -106,28 +106,9 @@ public class Grid : MonoBehaviour {
             }     
         return Neighbours;
     }
-    public Node[] GetOrthogonalNeighbours(Node node)
+   public bool ValidatePointOnGrid(int x, int y)
     {
-       Node[] neighbours = new Node[4];
-        //add top
-        if (node.gridY < gridSizeY-1 && grid[node.gridX, node.gridY + 1].walkable)
-            neighbours[0] = grid[node.gridX, node.gridY + 1];
-        //add bottom
-        if (node.gridY > 0 && grid[node.gridX, node.gridY - 1].walkable) 
-            neighbours[1] = grid[node.gridX, node.gridY - 1];
-        //add left
-        if (node.gridX > 0 && grid[node.gridX - 1, node.gridY].walkable)
-            neighbours[2] = grid[node.gridX - 1, node.gridY];
-        //add right
-        if (node.gridX < gridSizeX-1 && grid[node.gridX + 1, node.gridY].walkable)
-            neighbours[3] = grid[node.gridX + 1, node.gridY];
-
-       
-        return neighbours;
-    }
-    public bool ValidatePointOnGrid(int x, int y)
-    {
-        return (!(x > gridSizeX || x < 0 || y > gridSizeY || y < 0));
+        return (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY);
     }
 
     private void OnDrawGizmos()
@@ -170,11 +151,8 @@ public class Grid : MonoBehaviour {
            
         }
     }
+  
     //for UI interfacing purposes
-    public void ShowHeatMap(bool show)
-    {
-        DrawGcost = show;
-    }
     public void ShowGoalNode(bool show)
     {
         showGoalNode = show;

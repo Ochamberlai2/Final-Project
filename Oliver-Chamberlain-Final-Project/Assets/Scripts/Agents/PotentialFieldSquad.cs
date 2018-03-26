@@ -29,9 +29,6 @@ public class PotentialFieldSquad : MonoBehaviour {
      */
     public Formation currentFormation;
 
-    [SerializeField]
-    private MovementDirection moveDir;
-
 
     public float[,] formationPotentialField;
 
@@ -92,13 +89,13 @@ public class PotentialFieldSquad : MonoBehaviour {
                 if (squadAgents[i] == squadLeader)
                 {
                     //leader code
-                    squadAgents[i].Movement(CostFieldGenerator.Instance.staticObstacleCostField, CostFieldGenerator.Instance.goalCostField);
+                    squadAgents[i].Movement(false,CostFieldGenerator.Instance.staticObstacleCostField, CostFieldGenerator.Instance.goalCostField);
                     yield return new WaitForFixedUpdate();
                 }
                 else
                 {
                     // follower code
-                    squadAgents[i].Movement(CostFieldGenerator.Instance.staticObstacleCostField, formationPotentialField);
+                    squadAgents[i].Movement(true,  CostFieldGenerator.Instance.staticObstacleCostField, formationPotentialField);
                     yield return new WaitForFixedUpdate();
                 }
             }
@@ -110,7 +107,7 @@ public class PotentialFieldSquad : MonoBehaviour {
     {
         while(true)
         {
-           CostFieldGenerator.Instance.GenerateFormationField(grid.NodeFromWorldPoint(squadLeader.transform.position), formationDirections[moveDir], formationFieldStrength, SetSquadField);
+           CostFieldGenerator.Instance.GenerateFormationField(grid.NodeFromWorldPoint(squadLeader.transform.position), formationDirections[squadLeader.agentMovementDirection], formationFieldStrength, SetSquadField);
             yield return new WaitForSeconds(interval);
         }
         
