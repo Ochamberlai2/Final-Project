@@ -32,6 +32,8 @@ public class PotentialFieldSquad : MonoBehaviour {
 
     [SerializeField]
     private float formationFieldStrength;//strength of the formation field
+    [SerializeField]
+    private float formationFieldInfluenceRange = 30f;
     public float formationFieldUpdateInterval = 0.25f; //the number of times a second that the formation field updates
 
 
@@ -130,7 +132,7 @@ public class PotentialFieldSquad : MonoBehaviour {
     {
         while(true)
         {
-            CostFieldGenerator.GenerateFormationField(grid, grid.NodeFromWorldPoint(squadLeader.transform.position), formationDirections[squadLeader.agentMovementDirection], formationFieldStrength, ref formationPotentialField);
+            CostFieldGenerator.GenerateFormationField(grid, grid.NodeFromWorldPoint(squadLeader.transform.position), formationDirections[squadLeader.agentMovementDirection], formationFieldStrength,formationFieldInfluenceRange, ref formationPotentialField);
             yield return new WaitForSeconds(interval);
         }
         

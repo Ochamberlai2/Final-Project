@@ -625,6 +625,7 @@ MonoBehaviour:
   agentMovementSpeed: 2
   goalFieldMass: 240
   formationFieldStrength: 240
+  formationFieldInfluenceRange: 15
   formationFieldUpdateInterval: 0.05
   squadAgents:
   - {fileID: 736649215}
@@ -3610,6 +3611,7 @@ MonoBehaviour:
   agentMovementSpeed: 2
   goalFieldMass: 240
   formationFieldStrength: 240
+  formationFieldInfluenceRange: 15
   formationFieldUpdateInterval: 0.05
   squadAgents:
   - {fileID: 1835810137}

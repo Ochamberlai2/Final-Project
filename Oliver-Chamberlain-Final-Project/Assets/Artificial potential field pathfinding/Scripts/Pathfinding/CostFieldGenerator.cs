@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Diagnostics;
 
 
 
@@ -233,36 +234,26 @@ public static class CostFieldGenerator
        formationField = new float[grid.gridSizeX,grid.gridSizeY];
         //get the nodes to generate a field around
         Node[] formationNodes = GetFormationNodes(grid, leaderNode, pointsInRelationToLeaderNode).ToArray();
+                
+         foreach (Node node in grid.grid)
+         {
+             int gridX = node.gridX;
+             int gridY = node.gridY;
+             //if the node isnt walkable, ignore it
+             if (!node.walkable)
+                 continue;
 
-        Queue<Node> openSet = new Queue<Node>();
-        List<Node> closedSet = new List<Node>();
+             //generate distance for the potential equation
+             float distBetweenPoints = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
 
-        //add all neighbours of these nodes to the open set to begin with
-        for (int i = 0; i < formationNodes.Length; i++)
-        {
-            formationField[formationNodes[i].gridX, formationNodes[i].gridY] = fieldStrength;
-            openSet.Enqueue(formationNodes[i]);
-        }
-
-
-        foreach (Node node in grid.grid)
-        {
-            int gridX = node.gridX;
-            int gridY = node.gridY;
-            //if the node isnt walkable, ignore it
-            if (!node.walkable)
+            if (distBetweenPoints > fieldInfluence)
                 continue;
 
-            //generate distance for the potential equation
-            float distBetweenPoints = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
-
-
-            //potential = field strength / distance between the two points
-            float force = fieldStrength / distBetweenPoints;
-            //apply the value to the field
-            formationField[gridX, gridY] = force;
-        }
-
+             //potential = field strength / distance between the two points
+             float force = fieldStrength / distBetweenPoints;
+             //apply the value to the field
+             formationField[gridX, gridY] = force;
+         }
     } 
 
     /// <summary>
