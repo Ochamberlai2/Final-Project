@@ -25,6 +25,9 @@ public class PotentialFieldSquad : MonoBehaviour {
     public float[,] goalCostField;//represents the gravitational force of each grid tile in relation to the goal node
     public float[,] formationPotentialField;
     [Header("Potential field values")]
+    [SerializeField]
+    private float agentMovementSpeed = 2f;
+
     public float goalFieldMass;
 
     [SerializeField]
@@ -72,8 +75,12 @@ public class PotentialFieldSquad : MonoBehaviour {
                 {
                     //set the squad leader
                     squadLeader = agent;
-             
-                 
+                    agent.velocityMultiplier = agentMovementSpeed;
+                }
+                else
+                {
+                    //make a follower's movement speed double that of the leader to keep them in formation more effectively 
+                    agent.velocityMultiplier = agentMovementSpeed * 2;
                 }
             }
             //then find all other positions in the formation in relation to the leader
@@ -104,13 +111,13 @@ public class PotentialFieldSquad : MonoBehaviour {
                 if (squadAgents[i] == squadLeader)
                 {
                     //leader code
-                    squadAgents[i].Movement(false,SquadManager.Instance.staticObstacleCostField, goalCostField);
+                    squadAgents[i].Movement(true,SquadManager.Instance.staticObstacleCostField, goalCostField);
                     yield return new WaitForFixedUpdate();
                 }
                 else
                 {
                     // follower code
-                    squadAgents[i].Movement(true,  SquadManager.Instance.staticObstacleCostField, formationPotentialField);
+                    squadAgents[i].Movement(false,  SquadManager.Instance.staticObstacleCostField, formationPotentialField);
                     yield return new WaitForFixedUpdate();
                 }
             }

@@ -286,7 +286,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -25.920002
+      value: 6.7
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -294,7 +294,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 3.8200035
+      value: -4.4
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -328,11 +328,21 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -367,7 +377,7 @@ RectTransform:
   - {fileID: 1596966483}
   - {fileID: 1017916654}
   m_Father: {fileID: 534520602}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -531,7 +541,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -1.3657045
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -539,7 +549,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 35.970444
+      value: 37.4
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -569,83 +579,19 @@ Prefab:
       propertyPath: m_TagString
       value: Agent
       objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &314548223
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 314548224}
-  - component: {fileID: 314548226}
-  - component: {fileID: 314548225}
-  m_Layer: 5
-  m_Name: Text
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &314548224
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 314548223}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 534520602}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 333.05, y: 43.65}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &314548225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 314548223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
-    m_FontStyle: 0
-    m_BestFit: 1
-    m_MinSize: 10
-    m_MaxSize: 40
-    m_Alignment: 0
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: Left Shift + Left Click on an agent to see their agent avoidance field
---- !u!222 &314548226
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 314548223}
 --- !u!1 &359494554
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,6 +622,7 @@ MonoBehaviour:
   goalColour: {r: 0, g: 1, b: 0, a: 1}
   leaderColour: {r: 0, g: 0, b: 1, a: 1}
   standardAgentColour: {r: 0, g: 0, b: 0, a: 1}
+  agentMovementSpeed: 2
   goalFieldMass: 240
   formationFieldStrength: 240
   formationFieldUpdateInterval: 0.05
@@ -953,7 +900,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -9.81
+      value: -3.8
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -961,7 +908,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -22.99
+      value: -6.7
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -995,11 +942,21 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -1160,12 +1117,11 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 314548224}
   - {fileID: 195379473}
+  - {fileID: 552315011}
   - {fileID: 1715929151}
   - {fileID: 502266763}
   - {fileID: 608478187}
-  - {fileID: 552315011}
   m_Father: {fileID: 778398877}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1291,7 +1247,7 @@ RectTransform:
   - {fileID: 1761339977}
   - {fileID: 375008296}
   m_Father: {fileID: 534520602}
-  m_RootOrder: 5
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1875,7 +1831,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 5.5
+      value: 2.7
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1883,7 +1839,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -9.8
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1912,6 +1868,21 @@ Prefab:
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentMovementDirection
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2355,7 +2326,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 31.014294
+      value: 14.9
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2363,7 +2334,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 27.480444
+      value: 47.5
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2393,11 +2364,21 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2417,7 +2398,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 37.879997
+      value: 9.1
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2425,7 +2406,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -18.289999
+      value: -8.9
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2455,7 +2436,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
@@ -2464,6 +2445,16 @@ Prefab:
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_Name
       value: Potential field agent (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2482,7 +2473,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -5.943082
+      value: -4.2
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2490,7 +2481,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 50.276253
+      value: 42.5
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2524,11 +2515,21 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2548,7 +2549,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -32.785706
+      value: 11.1
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2556,7 +2557,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 49.590446
+      value: 43.4
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2590,11 +2591,21 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2710,7 +2721,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0.9226227
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2718,7 +2729,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 4.50581
+      value: -3.8
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2752,11 +2763,21 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2912,6 +2933,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114065391713070732, guid: 94abae0fcb865dc46bd6e298fbbf8164,
+        type: 2}
+      propertyPath: APFDebugToggles.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4118122746362744, guid: 94abae0fcb865dc46bd6e298fbbf8164, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2949,6 +2975,21 @@ Prefab:
       propertyPath: squadToOrder
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 114065391713070732, guid: 94abae0fcb865dc46bd6e298fbbf8164,
+        type: 2}
+      propertyPath: APFDebugToggles.Array.data[0]
+      value: 
+      objectReference: {fileID: 1715929153}
+    - target: {fileID: 114065391713070732, guid: 94abae0fcb865dc46bd6e298fbbf8164,
+        type: 2}
+      propertyPath: APFDebugToggles.Array.data[1]
+      value: 
+      objectReference: {fileID: 502266765}
+    - target: {fileID: 114065391713070732, guid: 94abae0fcb865dc46bd6e298fbbf8164,
+        type: 2}
+      propertyPath: APFDebugToggles.Array.data[2]
+      value: 
+      objectReference: {fileID: 608478189}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94abae0fcb865dc46bd6e298fbbf8164, type: 2}
   m_IsPrefabParent: 0
@@ -3297,7 +3338,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -16.675705
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -3305,7 +3346,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 22.780443
+      value: 39.6
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -3339,11 +3380,21 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: velocityMultiplier
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_TagString
       value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -3556,6 +3607,7 @@ MonoBehaviour:
   goalColour: {r: 0, g: 1, b: 0.91034484, a: 1}
   leaderColour: {r: 0.6838235, g: 0.12261662, b: 0.08547794, a: 1}
   standardAgentColour: {r: 0.9705882, g: 0.17128026, b: 0.8162388, a: 1}
+  agentMovementSpeed: 2
   goalFieldMass: 240
   formationFieldStrength: 240
   formationFieldUpdateInterval: 0.05

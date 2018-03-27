@@ -172,52 +172,50 @@ public static class CostFieldGenerator
     }//EOF
 #endregion
     #region agent collision
-    //this is an expensive function, can be optimised in the future by only generating potentials for points which are candidates
-    public static float[,] GetAgentFieldsSummed(Grid grid, List<Node> agentPositions, float agentPersonalFieldInfluence, float AgentMass)
-    {   
-        float[,] agentFields = new float[grid.gridSizeX, grid.gridSizeY];
 
-        List<Node> openSet = new List<Node>();
-
-        for(int i = 0; i  < agentPositions.Count; i++)
+    /// <summary>
+    /// Takes a node and list of agents in the world and calculates the potential for the node
+    /// </summary>
+    /// <param name="ignoreSquad">Whether or not the agent's squad should be ignored</param>
+    /// <param name="potentialNode">the node to calculate a value for</param>
+    /// <param name="searchingAgent">the agent searching for the potential</param>
+    /// <param name="agentsToConsider"> all agents to consider for collision avoidance</param>
+    /// <returns>The calculated potential value for the node</returns>
+    public static float GetAgentCollisionPotential(bool ignoreSquad, Node potentialNode, PotentialFieldAgent searchingAgent, List<PotentialFieldSquad> agentsToConsider)
+    {
+        float nodePotential = 0;
+        
+        //search through all squads.
+        for(int i = 0; i < agentsToConsider.Count; i++)
         {
-            openSet.AddRange(grid.GetNeighbours(agentPositions[i]));
-            while(openSet.Count > 0)
+            //and all agents in that squad 
+            for (int j = 0; j < agentsToConsider[i].squadAgents.Count; j++)
             {
-                Node nodeToCheck = openSet[0];//the node being evaluated is always the first in the open set
-                List<Node> neighbours = grid.GetNeighbours(nodeToCheck);
-
-                //loop through the neighbours of the checking node
-                for(int j = 0; j < neighbours.Count; j++)
+                //if the agent's squad should be ignored and the searching agent is in the squad (making it the agent's squad) then break out of this loop.
+                if (ignoreSquad && agentsToConsider[i].squadAgents.Contains(searchingAgent))
                 {
-                    //if there is no neighbour or the neighbour is unwalkable, dont check it
-                    if(neighbours[j] == null||!neighbours[j].walkable)
+                    break;
+                }
+                //if the current agent is the one searching for a potential value, it need to be ignored.
+                if(agentsToConsider[i].squadAgents[j] == searchingAgent)
+                {
+                    continue;
+                }
+                //if the node is within the agent's avoidance field radius, then work out a value for it.
+                float distanceValue = Vector3.Distance(potentialNode.WorldPosition, agentsToConsider[i].squadAgents[j].agentNode.WorldPosition);
+                if(distanceValue <= agentsToConsider[i].squadAgents[j].agentAvoidanceFieldRadius)
+                {
+                    //potential = agent mass / distance between them
+                    float potential = agentsToConsider[i].squadAgents[j].AgentMass / distanceValue;
+                    //only take the highest potential value
+                    if (potential > nodePotential)
                     {
-                        continue;
-                    }
-                    //otherwise get the distance between the current agent and the node we are checking currently
-                    float distBetweenPoints = Vector3.Distance(agentPositions[i].WorldPosition, neighbours[j].WorldPosition);
-   
-                    //if this node is outside of the desired field of influence, then ignore it
-                    if(distBetweenPoints > agentPersonalFieldInfluence)
-                    {
-                        continue;
-                    }
-                   
-                    //then figure out the potential of the point
-                    float force = AgentMass / distBetweenPoints;
-
-                    //if the force of the tile being assigned to is already greater than the one which would be applied, do not overwrite it.
-                    if(-force < agentFields[neighbours[j].gridX,neighbours[j].gridY])
-                    {
-                        agentFields[neighbours[j].gridX, neighbours[j].gridY] = -force;
-                        openSet.Add(neighbours[j]);
+                        nodePotential = potential;
                     }
                 }
-                openSet.Remove(nodeToCheck);
             }
         }
-        return agentFields;
+        return -nodePotential;
     }
     #endregion
     #region formation
@@ -228,13 +226,16 @@ public static class CostFieldGenerator
     /// <param name="leaderNode">the node that the formation leader is currently situated upon</param>
     /// <param name="pointsInRelationToLeaderNode">all points in the formation stored as offsets from the leader's position</param>
     /// <param name="fieldStrength">the strength of the potential field</param>
+    /// <param name="fieldInfluence">the range from the closest formation node the field will extend</param>
     /// <param name="result">a callback function to handle saving</param>
-    public static void GenerateFormationField(Grid grid, Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength, ref float[,] formationField)
+    public static void GenerateFormationField(Grid grid, Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength,float fieldInfluence, ref float[,] formationField)
     {
        formationField = new float[grid.gridSizeX,grid.gridSizeY];
         //get the nodes to generate a field around
         Node[] formationNodes = GetFormationNodes(grid, leaderNode, pointsInRelationToLeaderNode).ToArray();
+
         Queue<Node> openSet = new Queue<Node>();
+        List<Node> closedSet = new List<Node>();
 
         //add all neighbours of these nodes to the open set to begin with
         for (int i = 0; i < formationNodes.Length; i++)
@@ -244,7 +245,7 @@ public static class CostFieldGenerator
         }
 
 
-        foreach(Node node in grid.grid)
+        foreach (Node node in grid.grid)
         {
             int gridX = node.gridX;
             int gridY = node.gridY;
@@ -254,13 +255,12 @@ public static class CostFieldGenerator
 
             //generate distance for the potential equation
             float distBetweenPoints = FindDistanceToClosestFormationPosition(node.WorldPosition, formationNodes);
-          
+
 
             //potential = field strength / distance between the two points
             float force = fieldStrength / distBetweenPoints;
             //apply the value to the field
             formationField[gridX, gridY] = force;
-
         }
 
     } 

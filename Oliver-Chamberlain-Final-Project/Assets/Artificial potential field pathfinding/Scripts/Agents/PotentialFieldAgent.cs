@@ -11,16 +11,15 @@ public class PotentialFieldAgent : MonoBehaviour {
     private Rigidbody rb;//the agent's rigidbody 
 
     [Header("Agent movement")]
-    [HideInInspector]
+    
     public Vector3 desiredVelocity;
     public MovementDirection agentMovementDirection = MovementDirection.Down;
+    [HideInInspector]
     public float velocityMultiplier = 2f;//the agent's movement speed multiplier
     [Header("Agent collision avoidance")]
     public float AgentMass = 1.5f; //the mass of the agent
-    public float[,] agentFieldsSummed; //the agent collision avoidance APF
-    public float agentPersonalFieldInfluence = 2;//the agent's personal field strength is -infinity
+    public float agentAvoidanceFieldRadius = 2;//the agent's personal field strength is -infinity
 
-    private List<Node> otherAgentNodes = new List<Node>();
     [HideInInspector]
     public Node agentNode;
 
@@ -28,20 +27,8 @@ public class PotentialFieldAgent : MonoBehaviour {
 
     public void Initialise()
     {
-
         rb = GetComponent<Rigidbody>();//assign the rigidbody
-        SquadManager.Instance.agents.Add(this);//add the agent to the list of agents in order to track position etc
-        agentFieldsSummed = new float[SquadManager.Instance.grid.gridSizeX, SquadManager.Instance.grid.gridSizeY];
-        StartCoroutine(UpdateAgentCollisionField(.05f));
-    }
-
-    public IEnumerator UpdateAgentCollisionField(float updateDelay)
-    {
-        while(true)
-        {
-            agentFieldsSummed = CostFieldGenerator.GetAgentFieldsSummed(SquadManager.Instance.grid, otherAgentNodes,agentPersonalFieldInfluence,AgentMass);//the agent-agent APF
-            yield return new WaitForSeconds(updateDelay);
-        }
+        agentNode = SquadManager.Instance.grid.NodeFromWorldPoint(transform.position);
     }
 
     /// <summary>
@@ -49,9 +36,9 @@ public class PotentialFieldAgent : MonoBehaviour {
     /// There is no need to include agent's personal fields as this is calculated and summed seperately
     /// </summary>
     /// <param name="potentialFields">All potential fields to be summed</param>
-    public void Movement(bool useAgentAvoidance, params float [][,] potentialFields)
+    public void Movement(bool ignoreSquad, params float [][,] potentialFields)
     {
-        desiredVelocity = FindNextNode(useAgentAvoidance,potentialFields);//get the desired directional vector
+        desiredVelocity = FindNextNode(ignoreSquad,potentialFields);//get the desired directional vector
         rb.velocity = new Vector3(desiredVelocity.x, 0, desiredVelocity.z) * velocityMultiplier;//then apply the direction with the velocity multiplier
     }
 
@@ -60,7 +47,7 @@ public class PotentialFieldAgent : MonoBehaviour {
     /// </summary>
     /// <param name="potentialFields">The potential fields to be considered</param>
     /// <returns>A directional unit vector pointing towards the highest potential node.</returns>
-    private Vector3 FindNextNode(bool useAgentAvoidance, params float[][,] potentialFields)
+    private Vector3 FindNextNode(bool ignoreSquad, params float[][,] potentialFields)
     {
 
         agentNode = SquadManager.Instance.grid.NodeFromWorldPoint(transform.position); //the node that the agent is currently standing on
@@ -69,23 +56,6 @@ public class PotentialFieldAgent : MonoBehaviour {
 
         Node bestNode = null;
         float bestCost = 0;
-
-#region adding other agent's current nodes for agent-agent avoidance
-
-        otherAgentNodes.Clear();
-        //find all nodes of the agents which are not the current one
-        for(int j = 0; j < SquadManager.Instance.agents.Count; j++)
-        {
-            if (SquadManager.Instance.agents[j] == this)
-            {
-                continue;
-            }
-
-            otherAgentNodes.Add(SquadManager.Instance.grid.NodeFromWorldPoint(SquadManager.Instance.agents[j].transform.position));
-        }
-      
-#endregion
-
 
         //loop through the neighbours of the node the agent is positioned upon
         for (int i = 0; i < neighbourList.Count; i++)
@@ -96,7 +66,7 @@ public class PotentialFieldAgent : MonoBehaviour {
             
 
             //get the value attributed to the node based upon the relevant fields
-            float neighbourValue = FindNodePotential(neighbourList[i],useAgentAvoidance,potentialFields);
+            float neighbourValue = FindNodePotential(neighbourList[i],ignoreSquad,potentialFields);
             //if the sum of the relevant fields is more attractive than the currently most attractive node's value
             if (neighbourValue > bestCost)
             {
@@ -109,7 +79,7 @@ public class PotentialFieldAgent : MonoBehaviour {
             
         }
         //find the value of the agent's current node
-        float currentNodeValue = FindNodePotential(agentNode, useAgentAvoidance, potentialFields);
+        float currentNodeValue = FindNodePotential(agentNode, ignoreSquad, potentialFields);
         //if the best neighbour has a more desirable potential than the agent's current node -1 (to avoid the agent from being stuck in a local minima)
         if (bestNode == null || bestCost < currentNodeValue - 1)
        {
@@ -131,14 +101,17 @@ public class PotentialFieldAgent : MonoBehaviour {
     /// Find the potential value of a specified node.
     /// </summary>
     /// <param name="node">The node to retrieve the potential for</param>
-    /// <param name="useAgentAvoidance">Whether or not to use agent-agent avoidance</param>
+    /// <param name="ignoreSquad">Whether or not to use agent-agent avoidance</param>
     /// <param name="potentialFields">The potential fields to consider</param>
     /// <returns>The potential value of the desired node</returns>
-    private float FindNodePotential(Node node, bool useAgentAvoidance,params float[][,] potentialFields)
+    private float FindNodePotential(Node node, bool ignoreSquad,params float[][,] potentialFields)
     {
         float returnFloat = 0;
-        if(useAgentAvoidance)
-            returnFloat += agentFieldsSummed[node.gridX,node.gridY];
+
+    
+        returnFloat += CostFieldGenerator.GetAgentCollisionPotential(ignoreSquad, node, this, SquadManager.Instance.squads);
+
+      
         for (int i = 0; i < potentialFields.Length; i++)
         {
             returnFloat += potentialFields[i][node.gridX, node.gridY];

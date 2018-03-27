@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class SquadManager : MonoBehaviour {
 
+
     #region singleton
 
     private static SquadManager instance;
@@ -32,21 +33,19 @@ public class SquadManager : MonoBehaviour {
     }
     #endregion
 
-    public List<PotentialFieldAgent> agents;//all agents in the world
-
-    public Dictionary<int,PotentialFieldSquad> squads;//all squads in the world
+    public List<PotentialFieldSquad> squads;//all squads in the world - Access agents in the world through squads
 
     private PotentialFieldSquad squadToOrder;//the squad that will be ordered to move / to have their squad values shown in the debug menu
 
     #region UI elements
     [Header("UI element setup")]
     public GameObject squadSelectTickboxPrefab;
+    [SerializeField]
     private GameObject squadOrderTickboxParent;//parent object of all toggles, to know where in the ui to place them
     private List<Toggle> squadTickboxes = new List<Toggle>();//a list of all toggles to be able to turn them off when needed
 
-    public TextMesh[,] flowFieldCostText;//text meshes for debugging
     //Potential field debug show variables
-    private PotentialFieldAgent agentToShow;
+    public TextMesh[,] flowFieldCostText;//text meshes for debugging
     private bool showStaticField;
     private bool showGoalField;
     private bool showFormationField;
@@ -56,10 +55,10 @@ public class SquadManager : MonoBehaviour {
     GameObject textMeshParent;
 
     #endregion
-    [Header("Static obstacle field config")]
     //represents the gravitational force of each grid tile in relation to the closest obstacle node.
     public float[,] staticObstacleCostField;
 
+    [Header("Static obstacle field config")]
     public float staticFieldMass;
     [SerializeField]
     private float staticFieldInfluence;
@@ -67,10 +66,7 @@ public class SquadManager : MonoBehaviour {
     public Grid grid;
 
     public void Awake()
-    {
-        agents = new List<PotentialFieldAgent>();
-      
-
+    {   
         squadOrderTickboxParent = GameObject.Find("Squads to order");
 
         grid = FindObjectOfType<Grid>();
@@ -103,37 +99,17 @@ public class SquadManager : MonoBehaviour {
         //when left mouse is pressed, make a ray, then generate the vector field
         if (Input.GetKeyDown(KeyCode.Mouse0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            //if left shift modifier is pressed, set the agent to show 
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit rayhit = new RaycastHit();
-                if (Physics.Raycast(ray, out rayhit))
-                {
-                    if (rayhit.collider.tag == "Agent")
-                    {
-                        agentToShow = rayhit.collider.GetComponent<PotentialFieldAgent>();
-                    }
-                }
-                else
-                {
-                    agentToShow = null;
-                }
-            }
             //send a move order to the currently selected squad
-            else
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit rayhit = new RaycastHit();
+            if (Physics.Raycast(ray, out rayhit) && squadToOrder != null)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit rayhit = new RaycastHit();
-                if (Physics.Raycast(ray, out rayhit) && squadToOrder != null)
+                //get the clicked node
+                Node clickedNode = grid.NodeFromWorldPoint(rayhit.point);
+                //then check that the node is walkable, if not we dont need to call the movement functions
+                if (grid.grid[clickedNode.gridX, clickedNode.gridY].walkable)
                 {
-                    //get the clicked node
-                    Node clickedNode = grid.NodeFromWorldPoint(rayhit.point);
-                    //then check that the node is walkable, if not we dont need to call the movement functions
-                    if (grid.grid[clickedNode.gridX, clickedNode.gridY].walkable)
-                    {
-                        CostFieldGenerator.GenerateGoalField(grid, rayhit.point,ref instance.squadToOrder.goalCostField,instance.squadToOrder.goalFieldMass,ref instance.squadToOrder.goalNode);
-                    }
+                    CostFieldGenerator.GenerateGoalField(grid, rayhit.point,ref instance.squadToOrder.goalCostField,instance.squadToOrder.goalFieldMass,ref instance.squadToOrder.goalNode);
                 }
             }
         }
@@ -147,7 +123,7 @@ public class SquadManager : MonoBehaviour {
     public void setTextMeshText()
     {
         //if there is no squad to order or all of the bools are null, turn the object off
-        if (squadToOrder == null || !showGoalField && !showStaticField && !showFormationField && agentToShow == null)
+        if (squadToOrder == null || !showGoalField && !showStaticField && !showFormationField)
         {
             textMeshParent.SetActive(false);
             return;
@@ -182,10 +158,6 @@ public class SquadManager : MonoBehaviour {
                 {
                     valueToShow += squadToOrder.formationPotentialField[x, y];
                 }
-                if (agentToShow != null)
-                {
-                    valueToShow += agentToShow.agentFieldsSummed[x, y];
-                }
 
                 flowFieldCostText[x, y].text = valueToShow.ToString("F2");
             }
@@ -200,19 +172,18 @@ public class SquadManager : MonoBehaviour {
     {
         //initialise the dictionary if needed
         if (instance.squads == null)
-            instance.squads = new Dictionary<int, PotentialFieldSquad>();
+            instance.squads = new List<PotentialFieldSquad>();
 
         //add the squad to the dictionary
-        instance.squads.Add(instance.squads.Keys.Count + 1, squadToAdd);
+        instance.squads.Add( squadToAdd);
         //Create the UI element to select this squad and initialise it
         GameObject tickbox = Instantiate(squadSelectTickboxPrefab, squadOrderTickboxParent.transform) as GameObject;
-        tickbox.name = instance.squads.Keys.Count.ToString();
+        tickbox.name = instance.squads.Count.ToString();
         tickbox.GetComponentInChildren<Text>().text = "Squad " + tickbox.name;
         squadTickboxes.Add(tickbox.GetComponent<Toggle>());
         tickbox.GetComponent<Toggle>().group = squadOrderTickboxParent.GetComponent<ToggleGroup>();
-
-
-
+        //set the background of the tickbox to the squad's leader's colour
+        tickbox.transform.Find("Background").GetComponent<Image>().color = squadToAdd.leaderColour;
     }
 
     /// <summary>
@@ -224,12 +195,12 @@ public class SquadManager : MonoBehaviour {
         {
             if (instance.showTrueAgentPosition)
             {
-                foreach (int key in instance.squads.Keys)
+                foreach (PotentialFieldSquad squad in instance.squads)
                 {
-                    foreach (PotentialFieldAgent agent in instance.squads[key].squadAgents)
+                    foreach (PotentialFieldAgent agent in squad.squadAgents)
                     {
                         //draw the agent's true grid position onto the grid
-                        Gizmos.color = (agent.leader) ? instance.squads[key].leaderColour : instance.squads[key].standardAgentColour;
+                        Gizmos.color = (agent.leader) ? squad.leaderColour : squad.standardAgentColour;
                         Gizmos.DrawCube(agent.agentNode.WorldPosition, Vector3.one * (grid.nodeRadius * 1.5f));
                     }
                 }
@@ -244,6 +215,8 @@ public class SquadManager : MonoBehaviour {
     }
 
     #region UI interfacing functions
+
+
     public void ShowStaticCostField(bool show)
     {
         instance.showStaticField = show;
@@ -270,7 +243,7 @@ public class SquadManager : MonoBehaviour {
             {
                 //set the ordering squad to the correct one
                 int squadNum = int.Parse(EventSystem.current.currentSelectedGameObject.name);
-                instance.squadToOrder = instance.squads[squadNum];
+                instance.squadToOrder = instance.squads[squadNum-1];
             }
     }
     #endregion
