@@ -23,12 +23,13 @@ public class PotentialFieldAgent : MonoBehaviour {
     [HideInInspector]
     public Node agentNode;
 
+    private Grid grid;
 
-
-    public void Initialise()
+    public void Initialise(Grid _grid)
     {
         rb = GetComponent<Rigidbody>();//assign the rigidbody
-        agentNode = SquadManager.Instance.grid.NodeFromWorldPoint(transform.position);
+        grid = _grid;
+        agentNode =grid.NodeFromWorldPoint(transform.position);
     }
 
     /// <summary>
@@ -50,8 +51,8 @@ public class PotentialFieldAgent : MonoBehaviour {
     private Vector3 FindNextNode(bool ignoreSquad, params float[][,] potentialFields)
     {
 
-        agentNode = SquadManager.Instance.grid.NodeFromWorldPoint(transform.position); //the node that the agent is currently standing on
-        List<Node> neighbourList = SquadManager.Instance.grid.GetNeighbours(agentNode); //list of neighbours of the agent's current node
+        agentNode = grid.NodeFromWorldPoint(transform.position); //the node that the agent is currently standing on
+        List<Node> neighbourList = grid.GetNeighbours(agentNode); //list of neighbours of the agent's current node
 
 
         Node bestNode = null;
@@ -61,7 +62,7 @@ public class PotentialFieldAgent : MonoBehaviour {
         for (int i = 0; i < neighbourList.Count; i++)
         {
             //if the node is non walkable or null, ignore it
-            if (!neighbourList[i].walkable || neighbourList[i] == null || !SquadManager.Instance.grid.ValidatePointOnGrid(neighbourList[i].gridX,neighbourList[i].gridY))
+            if (!neighbourList[i].walkable || neighbourList[i] == null || !grid.ValidatePointOnGrid(neighbourList[i].gridX,neighbourList[i].gridY))
                 continue;
             
 

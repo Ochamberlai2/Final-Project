@@ -15,10 +15,8 @@ MonoBehaviour:
   FormationLayout:
     rows:
     - Column: 0000010000
+    - Column: 0000000000
     - Column: 0001000100
+    - Column: 0000000000
     - Column: 0100000001
-    - Column: 0000000000
-    - Column: 0000000000
     NumAgents: 5
-  DistBetweenColumns: 2
-  DistBetweenRows: 2

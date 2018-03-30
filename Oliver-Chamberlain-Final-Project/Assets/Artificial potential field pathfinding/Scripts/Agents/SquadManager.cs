@@ -59,17 +59,26 @@ public class SquadManager : MonoBehaviour {
     public float[,] staticObstacleCostField;
 
     [Header("Static obstacle field config")]
+    [Range(-300,0)]
     public float staticFieldMass;
     [SerializeField]
+    [Range(0,300)]
     private float staticFieldInfluence;
-
-    public Grid grid;
+    [HideInInspector]
+    private Grid grid;
 
     public void Awake()
     {   
+
+
         squadOrderTickboxParent = GameObject.Find("Squads to order");
 
         grid = FindObjectOfType<Grid>();
+
+        if(!grid)
+        {
+            Debug.LogError("Grid cannot be assigned.");
+        }
 
         staticObstacleCostField = new float[grid.gridSizeX, grid.gridSizeY];
 
@@ -92,6 +101,13 @@ public class SquadManager : MonoBehaviour {
         }
         CostFieldGenerator.GenerateStaticObstacleField(grid,ref staticObstacleCostField,staticFieldInfluence,staticFieldMass);
         setTextMeshText();
+
+        PotentialFieldSquad[] squads = FindObjectsOfType<PotentialFieldSquad>();
+        foreach(PotentialFieldSquad squad in squads)
+        {
+            squad.Initialise(grid);
+        }
+
     }
 
     public void Update()

@@ -31,15 +31,16 @@ public class PotentialFieldSquad : MonoBehaviour {
     public float goalFieldMass;
 
     [SerializeField]
+    [Range(0,300)]
     private float formationFieldStrength;//strength of the formation field
     [SerializeField]
+    [Range(0,300)]
     private float formationFieldInfluenceRange = 30f;
     public float formationFieldUpdateInterval = 0.25f; //the number of times a second that the formation field updates
 
 
     [Header("Formation information")]
     public List<PotentialFieldAgent> squadAgents;
-
     public PotentialFieldAgent squadLeader;
     public Formation currentFormation;
 
@@ -52,10 +53,10 @@ public class PotentialFieldSquad : MonoBehaviour {
 
 
 
-    public void Start()
+    public void Initialise(Grid _grid)
     {
 
-        grid = FindObjectOfType<Grid>();
+        grid = _grid;
         goalCostField = new float[grid.gridSizeX, grid.gridSizeY];
         formationPotentialField = new float[grid.gridSizeX,grid.gridSizeY];
         formationDirections = new Dictionary<MovementDirection, List<Vector2>>();
@@ -70,7 +71,7 @@ public class PotentialFieldSquad : MonoBehaviour {
             {
                 
                 //call the initialisation function for all of the agents(replaces start)
-                agent.Initialise();
+                agent.Initialise(grid);
 
                 //if the agent is the leader
                 if (agent.leader)
