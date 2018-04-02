@@ -6,7 +6,7 @@ using UnityEngine;
 public class PotentialFieldAgent : MonoBehaviour {
 
 
-    [HideInInspector]
+
     public bool leader; //whether or not the agent is the leader of the formation
     private Rigidbody rb;//the agent's rigidbody 
 
@@ -87,7 +87,7 @@ public class PotentialFieldAgent : MonoBehaviour {
             bestNode = agentNode;
         }
 
-
+      
         agentMovementDirection = FindAgentMovementDirection(bestNode);
 
         //find the directional vector to the best node
@@ -107,18 +107,16 @@ public class PotentialFieldAgent : MonoBehaviour {
     /// <returns>The potential value of the desired node</returns>
     private float FindNodePotential(Node node, bool ignoreSquad,params float[][,] potentialFields)
     {
-        float returnFloat = 0;
+        float potential = 0;
 
-    
-        returnFloat += CostFieldGenerator.GetAgentCollisionPotential(ignoreSquad, node, this, SquadManager.Instance.squads);
-
-      
+        potential += CostFieldGenerator.GetAgentCollisionPotential(ignoreSquad, node, this, SquadManager.Instance.squads);
+        //loop through the supplied potential fields and add their values
         for (int i = 0; i < potentialFields.Length; i++)
         {
-            returnFloat += potentialFields[i][node.gridX, node.gridY];
+            potential += potentialFields[i][node.gridX, node.gridY];
         }
 
-        return returnFloat;
+        return potential;
     }
     /// <summary>
     /// Finds which direction the agent is moving in based on which neighbouring node has the highest potential

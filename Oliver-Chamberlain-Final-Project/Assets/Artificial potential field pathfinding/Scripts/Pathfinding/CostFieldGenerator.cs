@@ -203,15 +203,13 @@ public static class CostFieldGenerator
                 {
                     //potential = agent mass / distance between them
                     float potential = agentsToConsider[i].squadAgents[j].AgentMass / distanceValue;
-                    //only take the highest potential value
-                    if (potential > nodePotential)
-                    {
-                        nodePotential = potential;
-                    }
+             
+                    nodePotential += potential;
+
                 }
             }
         }
-        return -nodePotential;
+        return nodePotential;
     }
     #endregion
     #region formation
@@ -326,6 +324,11 @@ public static class CostFieldGenerator
                 lowestValue = distToNode;
             }
         }
+
+        //set the lowest value to 1 to avoid dividing by 0
+        if (lowestValue == 0)
+            lowestValue = 1;
+
         return lowestValue;
 
     }

@@ -83,7 +83,7 @@ public class PotentialFieldSquad : MonoBehaviour {
                 else
                 {
                     //make a follower's movement speed double that of the leader to keep them in formation more effectively 
-                    agent.velocityMultiplier = agentMovementSpeed * 2;
+                    agent.velocityMultiplier = agentMovementSpeed * 1.5f;
                 }
             }
             //then find all other positions in the formation in relation to the leader
@@ -107,6 +107,7 @@ public class PotentialFieldSquad : MonoBehaviour {
     {
         while (true)
         {
+
             //loop through all squad and call their movement functions
             for(int i = 0; i < squadAgents.Count; i++)
             {

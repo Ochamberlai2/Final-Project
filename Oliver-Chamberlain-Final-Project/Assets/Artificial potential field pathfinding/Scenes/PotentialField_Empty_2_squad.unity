@@ -286,7 +286,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 6.7
+      value: -10.75
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -294,7 +294,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -4.4
+      value: 6.79
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -337,12 +337,12 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -541,7 +541,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 6.5
+      value: 9.68
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -549,7 +549,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 37.4
+      value: 35.87
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -582,12 +582,17 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: leader
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -628,11 +633,11 @@ MonoBehaviour:
   formationFieldInfluenceRange: 15
   formationFieldUpdateInterval: 0.05
   squadAgents:
-  - {fileID: 736649215}
-  - {fileID: 527556808}
-  - {fileID: 1635692242}
-  - {fileID: 982843884}
   - {fileID: 765665735}
+  - {fileID: 982843884}
+  - {fileID: 1635692242}
+  - {fileID: 527556808}
+  - {fileID: 736649215}
   squadLeader: {fileID: 0}
   currentFormation: {fileID: 11400000, guid: c3a551d6dc29da84eb72284d6028e138, type: 2}
 --- !u!4 &359494556
@@ -901,7 +906,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -3.8
+      value: -3.47
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -909,7 +914,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -6.7
+      value: -1.24
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -952,12 +957,12 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -1832,7 +1837,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 2.7
+      value: -3.49
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1840,7 +1845,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -0.5
+      value: 5.42
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1866,24 +1871,15 @@ Prefab:
       propertyPath: m_Name
       value: Potential field agent (7)
       objectReference: {fileID: 0}
-    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
-      propertyPath: m_TagString
-      value: Agent
-      objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
-      propertyPath: agentMovementDirection
-      value: 2
+      propertyPath: agentAvoidanceFieldRadius
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
-        type: 2}
-      propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: -50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2327,7 +2323,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 14.9
+      value: 6.15
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2335,7 +2331,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 47.5
+      value: 33.6
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2360,7 +2356,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: leader
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
@@ -2374,12 +2370,12 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2399,7 +2395,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 9.1
+      value: 3.19
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2407,7 +2403,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -8.9
+      value: 2.76
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2432,7 +2428,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: leader
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
@@ -2450,12 +2446,17 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentMovementDirection
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2474,7 +2475,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -4.2
+      value: 0.51
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2482,7 +2483,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 42.5
+      value: 38.83
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2525,12 +2526,12 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2550,7 +2551,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 11.1
+      value: 13.09
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2558,7 +2559,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 43.4
+      value: 40.7
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2601,12 +2602,12 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2722,7 +2723,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -0.4
+      value: -10.91
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2730,7 +2731,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -3.8
+      value: -3.4
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2773,12 +2774,12 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -3339,7 +3340,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0.9
+      value: 2.25
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.y
@@ -3347,7 +3348,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 39.6
+      value: 35.87
       objectReference: {fileID: 0}
     - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
       propertyPath: m_LocalRotation.x
@@ -3390,12 +3391,12 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: AgentMass
-      value: 50
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 2
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}

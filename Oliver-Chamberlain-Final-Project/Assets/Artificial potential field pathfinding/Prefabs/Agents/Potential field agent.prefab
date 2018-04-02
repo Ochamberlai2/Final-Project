@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 114971858205383984}
   m_Layer: 0
   m_Name: Potential field agent
-  m_TagString: Untagged
+  m_TagString: Agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -37,8 +37,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1720229548039684}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.833, y: 1, z: 24.07103}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.49, y: 422.56482, z: 5.42}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -109,12 +109,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e191d834fedd68b4f852ef8a56d7192d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leader: 1
-  rb: {fileID: 0}
+  leader: 0
   desiredVelocity: {x: 0, y: 0, z: 0}
+  agentMovementDirection: 2
   velocityMultiplier: 2
-  recentlyVisitedListSize: 4
-  recentlyVisitedValueReduction: -1
+  AgentMass: -50
+  agentAvoidanceFieldRadius: 4
 --- !u!136 &136830960792247184
 CapsuleCollider:
   m_ObjectHideFlags: 1
