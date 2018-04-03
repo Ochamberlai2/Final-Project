@@ -6,6 +6,7 @@ using UnityEngine;
 public class Formation : ScriptableObject
 {
     public int NumOfAgents;
+    [Header("1 for a follower, 2 for the leader's position")]
     public RowData FormationLayout;
 
 
