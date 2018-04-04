@@ -10,6 +10,12 @@ public enum MovementDirection
     Up,
     Right,
 }
+/*
+ * Mathf.RoundToInt(root3(vector3.distance for the two positions) * sin(angle between leader and formation position + 45))
+ * Mathf.RoundToInt(root3(vector3.distance for the two positions) * cos(angle between agent and formation position + 45))
+ * 
+ * then use the initial positions and the 45 degree rotation to work out the others
+ */
 
 public class PotentialFieldSquad : MonoBehaviour {
 
