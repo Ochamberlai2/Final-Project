@@ -89,7 +89,7 @@ public class PotentialFieldSquad : MonoBehaviour {
                 else
                 {
                     //make a follower's movement speed double that of the leader to keep them in formation more effectively 
-                    agent.velocityMultiplier = agentMovementSpeed * 5f;
+                    agent.velocityMultiplier = agentMovementSpeed * 1.5f;
                 }
             }
             //then find all other positions in the formation in relation to the leader
