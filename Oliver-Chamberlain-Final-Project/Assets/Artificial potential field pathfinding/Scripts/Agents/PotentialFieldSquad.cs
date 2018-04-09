@@ -14,12 +14,6 @@ public enum MovementDirection
     East,
     SouthEast,
 }
-/*
- * Mathf.RoundToInt(root3(vector3.distance for the two positions) * sin(angle between leader and formation position + 45))
- * Mathf.RoundToInt(root3(vector3.distance for the two positions) * cos(angle between agent and formation position + 45))
- * 
- * then use the initial positions and the 45 degree rotation to work out the others
- */
 
 public class PotentialFieldSquad : MonoBehaviour {
 
@@ -95,7 +89,7 @@ public class PotentialFieldSquad : MonoBehaviour {
                 else
                 {
                     //make a follower's movement speed double that of the leader to keep them in formation more effectively 
-                    agent.velocityMultiplier = agentMovementSpeed * 2f;
+                    agent.velocityMultiplier = agentMovementSpeed * 5f;
                 }
             }
             //then find all other positions in the formation in relation to the leader
