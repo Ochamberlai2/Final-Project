@@ -5,10 +5,14 @@ using UnityEngine;
 
 public enum MovementDirection
 {
-    Down,
-    left,
-    Up,
-    Right,
+    South,
+    SouthWest,
+    West,
+    NorthWest,
+    North,
+    NorthEast,
+    East,
+    SouthEast,
 }
 /*
  * Mathf.RoundToInt(root3(vector3.distance for the two positions) * sin(angle between leader and formation position + 45))
@@ -71,11 +75,13 @@ public class PotentialFieldSquad : MonoBehaviour {
 
         try
         {
+            //Throw and error in the case that the squad is empty
             if (squadAgents.Count == 0)
                 Debug.LogError("Squad is empty and invalid");
+
+
             foreach (PotentialFieldAgent agent in squadAgents)
-            {
-                
+            {    
                 //call the initialisation function for all of the agents(replaces start)
                 agent.Initialise(grid);
 
@@ -89,7 +95,7 @@ public class PotentialFieldSquad : MonoBehaviour {
                 else
                 {
                     //make a follower's movement speed double that of the leader to keep them in formation more effectively 
-                    agent.velocityMultiplier = agentMovementSpeed * 1.5f;
+                    agent.velocityMultiplier = agentMovementSpeed * 2f;
                 }
             }
             //then find all other positions in the formation in relation to the leader
@@ -120,19 +126,20 @@ public class PotentialFieldSquad : MonoBehaviour {
 
                 if (squadAgents[i] == squadLeader)
                 {
-                    //leader code
+                    //leader potential fields
                     squadAgents[i].Movement(true,SquadManager.Instance.staticObstacleCostField, goalCostField);
                     yield return new WaitForFixedUpdate();
                 }
                 else
                 {
-                    // follower code
+                    // follower potential fields
                     squadAgents[i].Movement(false,  SquadManager.Instance.staticObstacleCostField, formationPotentialField);
                     yield return new WaitForFixedUpdate();
                 }
             }
         }
     }
+
     /// <summary>
     ///    updates the formation field every x seconds
     /// </summary>
@@ -149,13 +156,35 @@ public class PotentialFieldSquad : MonoBehaviour {
 
 
     #region formation matrix functions
+    /// <summary>
+    ///Initialises the formation and finds all permutations of the formation rotation
+    /// </summary>
+    private void GetFormationRotations()
+    {
+        //find the current formation's matrix
+        int[,] formationMatrix = GetFormationMatrix(currentFormation);
+        formationDirections.Clear();
+        //add the down direction
+        formationDirections.Add(MovementDirection.South, FindFormationPointsInRelationToLeader(formationMatrix, MovementDirection.South));
+        //then add the other 3 directions
+        for (int i = 1; i < 8; i++)
+        {
+            List<Vector2> rotatedPoints = new List<Vector2>();
+            //loop through all of the previously saved down direction points
+            for (int j = 0; j < formationDirections[MovementDirection.South].Count; j++)
+            {
+                rotatedPoints.Add(RotateVector2DByAngle(formationDirections[MovementDirection.South][j], -45 * i));
+            }
+            formationDirections.Add((MovementDirection)i, rotatedPoints);
+        }
+    }
 
     /// <summary>
     /// Finds the leader's position in the current formation.
     /// </summary>
     /// <param name="movementDirection">the direction that the current formation matrix faces</param>
     /// <param name="formationMatrix">the current formation matrix</param>
-    /// <returns></returns>
+    /// <returns>The leader's position in the formation</returns>
     public Vector2 FindLeaderPositionInFormation(MovementDirection movementDirection, int[,] formationMatrix)
     {
 
@@ -174,23 +203,7 @@ public class PotentialFieldSquad : MonoBehaviour {
         return Vector2.zero;
     }
 
-    /// <summary>
-    ///Initialises the formation and finds all permutations of the formation rotation
-    /// </summary>
-    private void GetFormationRotations()
-    {
-        //find the current formation's matrix
-        int[,] formationMatrix = GetFormationMatrix(currentFormation);
-        formationDirections.Clear();
-        //add the down direction
-        formationDirections.Add(MovementDirection.Down, FindFormationPointsInRelationToLeader(formationMatrix, MovementDirection.Down));
-        //then add the other 3 directions
-        for(int i = 1; i < 4; i++)
-        {
-            RotateMatrix90(ref formationMatrix, currentFormation.NumOfAgents);
-            formationDirections.Add((MovementDirection)i, FindFormationPointsInRelationToLeader(formationMatrix,(MovementDirection)i));
-        }
-    }
+    
 
     /// <summary>
     /// Find formation positions in relation to the leader's current position
@@ -223,26 +236,23 @@ public class PotentialFieldSquad : MonoBehaviour {
         return formationPointsInRelationToLeader;
     }
 
-
     /// <summary>
-    ///  rotates the formation matrix 90 degrees
+    /// Takes a given vector and rotates it by the given angle around 0,0,0
     /// </summary>
-    public void RotateMatrix90(ref int[,] matrix, int matrixSize)
+    /// <param name="vectorToRotate">The vector to rotate by the angle</param>
+    /// <param name="angle">The angle to rotate the vector by</param>
+    /// <returns>The rotated angle</returns>
+    public Vector2 RotateVector2DByAngle(Vector2 vectorToRotate, float angle)
     {
-        int[,] newMat = new int[matrixSize, matrixSize];
+        float newX = Mathf.Cos(angle * Mathf.Deg2Rad) * (vectorToRotate.x) - Mathf.Sin(angle * Mathf.Deg2Rad) * (vectorToRotate.y);
+        float newY = Mathf.Sin(angle * Mathf.Deg2Rad) * (vectorToRotate.x) + Mathf.Cos(angle * Mathf.Deg2Rad) * (vectorToRotate.y);
 
-        for(int i = 0; i < matrixSize; i++)
-        {
-            for(int j = 0; j < matrixSize; j++)
-            {
-                newMat[i, j] = matrix[matrixSize - j - 1, i];
-            }
-        }
-        matrix = newMat;
+        return new Vector2(newX, newY);
     }
 
+
     /// <summary>
-    ///gets the formation matrix from the argument
+    ///gets the formation matrix from the formation supplied in the argument
     /// </summary>
     public int[,] GetFormationMatrix(Formation formation)
     {

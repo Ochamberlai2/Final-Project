@@ -1881,6 +1881,11 @@ Prefab:
       propertyPath: AgentMass
       value: -50
       objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentMovementDirection
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
   m_IsPrefabParent: 0
@@ -2377,6 +2382,11 @@ Prefab:
       propertyPath: agentAvoidanceFieldRadius
       value: 4.5
       objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentMovementDirection
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
   m_IsPrefabParent: 0
@@ -2456,7 +2466,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentMovementDirection
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}

@@ -225,7 +225,7 @@ public static class CostFieldGenerator
     public static void GenerateFormationField(Grid grid, Node leaderNode ,List<Vector2> pointsInRelationToLeaderNode,float fieldStrength,float fieldInfluence, ref float[,] formationField)
     {
 
-       formationField = new float[grid.gridSizeX,grid.gridSizeY];
+        formationField = new float[grid.gridSizeX,grid.gridSizeY];
         //get the nodes to generate a field around
         Node[] formationNodes = GetFormationNodes(grid, leaderNode, pointsInRelationToLeaderNode).ToArray();
 
@@ -293,9 +293,9 @@ public static class CostFieldGenerator
         //loop through all of the points in relation to the leader and find which node they should be attributed to given the leader's positional node
         foreach(Vector2 offset in pointsInRelationToLeaderNode)
         {
-            if(grid.ValidatePointOnGrid((int)offset.x + leaderNode.gridX,(int)offset.y + leaderNode.gridY))
+            if(grid.ValidatePointOnGrid(Mathf.RoundToInt(offset.x) + leaderNode.gridX, Mathf.RoundToInt(offset.y) + leaderNode.gridY))
             {
-                Node referencedNode = grid.grid[leaderNode.gridX + (int)offset.x, leaderNode.gridY + (int)offset.y];
+                Node referencedNode = grid.grid[leaderNode.gridX + Mathf.RoundToInt(offset.x), leaderNode.gridY + Mathf.RoundToInt(offset.y)];
                 returnList.Add(referencedNode);
             }
         }

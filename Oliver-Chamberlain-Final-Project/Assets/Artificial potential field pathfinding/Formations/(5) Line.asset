@@ -9,17 +9,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f68ad5af695d4b941bcbcf81ab6723ce, type: 3}
-  m_Name: (6) Line
+  m_Name: (5) Line
   m_EditorClassIdentifier: 
-  NumOfAgents: 6
+  NumOfAgents: 5
   FormationLayout:
     rows:
-    - Column: 010101010101
-    - Column: 000000000000
-    - Column: 000000000000
-    - Column: 000000000000
-    - Column: 000000000000
-    - Column: 000000000000
-    NumAgents: 6
-  DistBetweenColumns: 0
-  DistBetweenRows: 0
+    - Column: 0100000001000000020000000100000001000000
+    - Column: 0000000000000000000000000000000000000000
+    - Column: 0000000000000000000000000000000000000000
+    - Column: 0000000000000000000000000000000000000000
+    - Column: 0000000000000000000000000000000000000000
+    NumAgents: 5

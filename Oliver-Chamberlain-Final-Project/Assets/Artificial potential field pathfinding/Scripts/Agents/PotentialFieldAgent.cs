@@ -11,9 +11,9 @@ public class PotentialFieldAgent : MonoBehaviour {
     private Rigidbody rb;//the agent's rigidbody 
 
     [Header("Agent movement")]
-    
+    [HideInInspector]
     public Vector3 desiredVelocity;
-    public MovementDirection agentMovementDirection = MovementDirection.Down;
+    public MovementDirection agentMovementDirection = MovementDirection.South;
     [HideInInspector]
     public float velocityMultiplier = 2f;//the agent's movement speed multiplier
     [Header("Agent collision avoidance")]
@@ -53,7 +53,6 @@ public class PotentialFieldAgent : MonoBehaviour {
 
         agentNode = grid.NodeFromWorldPoint(transform.position); //the node that the agent is currently standing on
         List<Node> neighbourList = grid.GetNeighbours(agentNode); //list of neighbours of the agent's current node
-
 
         Node bestNode = null;
         float bestCost = 0;
@@ -109,6 +108,7 @@ public class PotentialFieldAgent : MonoBehaviour {
     {
         float potential = 0;
 
+        //get the agent - agent avoidance potential value
         potential += CostFieldGenerator.GetAgentCollisionPotential(ignoreSquad, node, this, SquadManager.Instance.squads);
         //loop through the supplied potential fields and add their values
         for (int i = 0; i < potentialFields.Length; i++)
@@ -122,10 +122,10 @@ public class PotentialFieldAgent : MonoBehaviour {
     /// Finds which direction the agent is moving in based on which neighbouring node has the highest potential
     /// </summary>
     /// <param name="bestNode">the highest potential neighbouring node</param>
-    /// <returns></returns>
+    /// <returns>The direction that the agent is moving in</returns>
     private MovementDirection FindAgentMovementDirection(Node bestNode)
     {
-        MovementDirection returnDirection = MovementDirection.Down;
+        MovementDirection returnDirection = MovementDirection.South;
 
         if(bestNode.gridX == agentNode.gridX -1)
         {
@@ -134,21 +134,21 @@ public class PotentialFieldAgent : MonoBehaviour {
             //1|0|0
             if (bestNode.gridY == agentNode.gridY - 1)
             {
-                returnDirection = MovementDirection.left;
+                returnDirection = MovementDirection.SouthWest;
             }
             //0|0|0
             //1|0|0
             //0|0|0
             else if (bestNode.gridY == agentNode.gridY)
             {
-                returnDirection = MovementDirection.left;
+                returnDirection = MovementDirection.West;
             }
             //1|0|0
             //0|0|0
             //0|0|0
             else if (bestNode.gridY == agentNode.gridY + 1)
             {
-                returnDirection = MovementDirection.left;
+                returnDirection = MovementDirection.NorthWest;
             }
         }
         else if(bestNode.gridX == agentNode.gridX)
@@ -158,7 +158,7 @@ public class PotentialFieldAgent : MonoBehaviour {
             //0|1|0
             if (bestNode.gridY == agentNode.gridY - 1)
             {
-                returnDirection = MovementDirection.Down;
+                returnDirection = MovementDirection.South;
             }
             //0|0|0
             //0|1|0
@@ -173,7 +173,7 @@ public class PotentialFieldAgent : MonoBehaviour {
             //0|0|0
             else if (bestNode.gridY == agentNode.gridY + 1)
             {
-                returnDirection = MovementDirection.Up;
+                returnDirection = MovementDirection.North;
             }
         }
         else if(bestNode.gridX == agentNode.gridX + 1)
@@ -183,21 +183,21 @@ public class PotentialFieldAgent : MonoBehaviour {
             //0|0|1
             if (bestNode.gridY == agentNode.gridY - 1)
             {
-                returnDirection = MovementDirection.Right;
+                returnDirection = MovementDirection.SouthEast;
             }
             //0|0|0
             //0|0|1
             //0|0|0
             else if (bestNode.gridY == agentNode.gridY)
             {
-                returnDirection = MovementDirection.Right;
+                returnDirection = MovementDirection.East;
             }
             //0|0|1
             //0|0|0
             //0|0|0
             else if (bestNode.gridY == agentNode.gridY + 1)
             {
-                returnDirection = MovementDirection.Right;
+                returnDirection = MovementDirection.NorthEast;
             }
         }
 

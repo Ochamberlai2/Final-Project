@@ -3,7 +3,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
+/// <summary>
+/// Handles debug UI and issuing commands to any squads in the game world
+/// </summary>
 public class SquadManager : MonoBehaviour {
 
 
@@ -85,7 +87,7 @@ public class SquadManager : MonoBehaviour {
         flowFieldCostText = new TextMesh[grid.gridSizeX, grid.gridSizeY];
         textMeshParent = GameObject.Find("TextMeshes");
 
-        //generate line renderers to represent each vector
+        //generate line renderers to represent each grid position
         for (int x = 0; x < grid.gridSizeX; x++)
         {
             for (int y = 0; y < grid.gridSizeY; y++)
@@ -101,8 +103,9 @@ public class SquadManager : MonoBehaviour {
         }
         CostFieldGenerator.GenerateStaticObstacleField(grid,ref staticObstacleCostField,staticFieldInfluence,staticFieldMass);
         setTextMeshText();
-
+        //find all squads currently in the world
         PotentialFieldSquad[] squads = FindObjectsOfType<PotentialFieldSquad>();
+        //and initialise them
         foreach(PotentialFieldSquad squad in squads)
         {
             squad.Initialise(grid);
