@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Handles debug UI and issuing commands to any squads in the game world
@@ -69,15 +70,14 @@ public class SquadManager : MonoBehaviour {
     [HideInInspector]
     private Grid grid;
 
-    public void Awake()
-    {   
 
-
+    public void OnEnable()
+    {
         squadOrderTickboxParent = GameObject.Find("Squads to order");
 
         grid = FindObjectOfType<Grid>();
 
-        if(!grid)
+        if (!grid)
         {
             Debug.LogError("Grid cannot be assigned.");
         }
@@ -101,16 +101,15 @@ public class SquadManager : MonoBehaviour {
                 flowFieldCostText[x, y].transform.Rotate(Vector3.right, 90);
             }
         }
-        CostFieldGenerator.GenerateStaticObstacleField(grid,ref staticObstacleCostField,staticFieldInfluence,staticFieldMass);
+        CostFieldGenerator.GenerateStaticObstacleField(grid, ref staticObstacleCostField, staticFieldInfluence, staticFieldMass);
         setTextMeshText();
         //find all squads currently in the world
         PotentialFieldSquad[] squads = FindObjectsOfType<PotentialFieldSquad>();
         //and initialise them
-        foreach(PotentialFieldSquad squad in squads)
+        foreach (PotentialFieldSquad squad in squads)
         {
             squad.Initialise(grid);
         }
-
     }
 
     public void Update()
@@ -264,6 +263,19 @@ public class SquadManager : MonoBehaviour {
                 int squadNum = int.Parse(EventSystem.current.currentSelectedGameObject.name);
                 instance.squadToOrder = instance.squads[squadNum-1];
             }
+    }
+
+    public void Load1SquadNoObs()
+    {
+        SceneManager.LoadScene("PotentialField_Empty_1_squad");
+    }
+    public void Load2SquadNoObs()
+    {
+        SceneManager.LoadScene("PotentialField_Empty_2_squad");
+    }
+    public void Load2SquadObs()
+    {
+        SceneManager.LoadScene("PotentialField_7_Obstacles_2_squad");
     }
     #endregion
 }

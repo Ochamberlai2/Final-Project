@@ -4,4 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Artificial potential field pathfinding/Scenes/PotentialField_Empty_1_squad.unity
+    guid: b891f1bdb2b16d3448fff22d76502bc6
+  - enabled: 1
+    path: Assets/Artificial potential field pathfinding/Scenes/PotentialField_7_Obstacles_2_squad.unity
+    guid: 5e8f3c56099f334428c795a03d0a6733
+  - enabled: 1
+    path: Assets/Artificial potential field pathfinding/Scenes/PotentialField_Empty_2_squad.unity
+    guid: 8eaad9e8d3d92ba4ebdd27ca878a9f8a
