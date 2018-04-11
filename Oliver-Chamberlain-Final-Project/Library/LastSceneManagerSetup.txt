@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Artificial potential field pathfinding/Scenes/PotentialField_Empty_1_squad.unity
+- path: Assets/Artificial potential field pathfinding/Scenes/PotentialField_7_Obstacles_2_squad.unity
   isLoaded: 1
   isActive: 1

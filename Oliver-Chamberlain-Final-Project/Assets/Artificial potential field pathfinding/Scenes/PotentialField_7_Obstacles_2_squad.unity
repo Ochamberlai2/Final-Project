@@ -202,6 +202,17 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 45265609}
+--- !u!114 &58823349 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+    type: 2}
+  m_PrefabInternal: {fileID: 113546427}
+  m_Script: {fileID: 11500000, guid: e191d834fedd68b4f852ef8a56d7192d, type: 3}
+--- !u!4 &58823354 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61,
+    type: 2}
+  m_PrefabInternal: {fileID: 113546427}
 --- !u!1 &76978317
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,6 +282,76 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 76978317}
+--- !u!1001 &113546427
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 359494556}
+    m_Modifications:
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 422.56482
+      objectReference: {fileID: 0}
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4399534993066870, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_Name
+      value: Potential field agent (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: leader
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: velocityMultiplier
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720229548039684, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+      propertyPath: m_TagString
+      value: Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: AgentMass
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
+        type: 2}
+      propertyPath: agentAvoidanceFieldRadius
+      value: 4.5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
+  m_IsPrefabParent: 0
 --- !u!114 &132264590 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114065391713070732, guid: 94abae0fcb865dc46bd6e298fbbf8164,
@@ -342,7 +423,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 4
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -717,8 +798,9 @@ MonoBehaviour:
   - {fileID: 1635692242}
   - {fileID: 982843884}
   - {fileID: 765665735}
+  - {fileID: 58823349}
   squadLeader: {fileID: 0}
-  currentFormation: {fileID: 11400000, guid: c3a551d6dc29da84eb72284d6028e138, type: 2}
+  currentFormation: {fileID: 11400000, guid: 9049a18c52fc06a45ab46787ce915240, type: 2}
 --- !u!4 &359494556
 Transform:
   m_ObjectHideFlags: 0
@@ -734,6 +816,7 @@ Transform:
   - {fileID: 1635692247}
   - {fileID: 982843889}
   - {fileID: 765665740}
+  - {fileID: 58823354}
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1115,7 +1198,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 4
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -2575,7 +2658,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 4
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
@@ -3260,7 +3343,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 4
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
@@ -3868,7 +3951,7 @@ Prefab:
     - target: {fileID: 114971858205383984, guid: 845ef3d209c9782448372f5067dbbe61,
         type: 2}
       propertyPath: agentAvoidanceFieldRadius
-      value: 4
+      value: 4.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 845ef3d209c9782448372f5067dbbe61, type: 2}
