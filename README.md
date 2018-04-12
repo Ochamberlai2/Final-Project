@@ -5,6 +5,8 @@ My final project for my third year at university. Link to the accompanying blog 
 Open the "Oliver - Chamberlain - final - project" file, navigate to assets -> artificial potential field pathfinding -> scenes.
 
 ## Important
+This project has a working release in the releases tab
+
 The build folder contains an executable for the project. Most debugging tools are unavailable in the executable because they depend on Unity's Gizmo system.
 
 ## Depenencies
